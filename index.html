@@ -193,10 +193,12 @@
           linear-gradient(to bottom, transparent, #000 15%, #000 85%, transparent);
         mask-composite: intersect;
         opacity: 0;
-        pointer-events: none;
+        visibility: hidden;
+        pointer-events: none; /* fully removed when idle so it can't tint the boxes */
       }
       #tn.show {
         opacity: 1;
+        visibility: visible;
       }
 
       /* ---------- Bottom tab bar ---------- */
@@ -797,6 +799,11 @@
           transition: width 0.1s linear;
         }
         #tn {
+          transition:
+            opacity 0.25s,
+            visibility 0s 0.25s;
+        }
+        #tn.show {
           transition: opacity 0.25s;
         }
         #title {
