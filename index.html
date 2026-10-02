@@ -32,11 +32,12 @@ button.buy,.row button{background:var(--acc);color:#190014;border:0;border-radiu
 @media (prefers-reduced-motion:no-preference){#tn{transition:opacity .25s}}
 #hdw{position:relative}#tn{border-radius:12px;text-align:center}
 [hidden]{display:none!important}
-#title{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 35%,hsl(var(--h) 55% 16%/.82),hsl(var(--h) 60% 4%/.93));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}#title.out{opacity:0;pointer-events:none}
+#title{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 35%,hsl(var(--h) 55% 16%/.9),hsl(var(--h) 60% 4%/.96))}#title.out{opacity:0;pointer-events:none}
 .tw{max-width:360px}#tico{color:var(--acc);margin-bottom:14px}#title h1{margin:0 0 10px;font:800 42px/1.05 "Trebuchet MS",Verdana,sans-serif;letter-spacing:1px;background:linear-gradient(90deg,#fff,var(--acc) 60%,#5fd8ff);-webkit-background-clip:text;background-clip:text;color:transparent}#title p{color:var(--mut);margin:0}#go{margin-top:30px;padding:14px 48px;font:inherit;font-size:18px;font-weight:700;border:0;border-radius:30px;background:var(--acc);color:#190014}#ts{display:block;margin-top:14px;color:var(--mut)}
 @media (prefers-reduced-motion:no-preference){@keyframes fl{50%{transform:translateY(-10px) rotate(6deg)}}#tico{animation:fl 5s ease-in-out infinite}#title{transition:opacity .5s}}
 #away{margin-top:22px;padding:12px 14px;border:1px solid var(--bd);border-radius:14px;background:color-mix(in srgb,var(--card) 70%,transparent);color:var(--gold)}
 #foot{flex-wrap:wrap}#sv{flex-basis:100%;width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;font-size:12px}
+#go{touch-action:manipulation}
 </style></head><body>
 <div id="title"><div class="tw"><div id="tico"></div><h1>Space Capitalism</h1><p>Build a fleet. Hire a crew. Own the galaxy.</p><div id="away" hidden></div><button id="go">Start</button><small id="ts"></small></div></div>
 <div id="top"><div id="nav"></div><div id="hdw"><div id="hd"></div><div id="tn"></div></div></div><div id="modes" class="modes"></div><div id="fleet"></div><div id="pane"></div><div id="foot"><label>Theme color <input type="color" id="cp" title="Theme color"></label><button id="fsb" data-a="fs" data-i="0" hidden>Full screen</button><button id="wipeb" data-a="wipe" data-i="0">Delete save</button><button data-a="exp" data-i="0">Export save</button><button data-a="imp" data-i="0">Import save</button><textarea id="sv" hidden rows="3"></textarea></div><div id="toast"></div>
@@ -153,7 +154,7 @@ load();build();let th='#ff3dd8';try{th=localStorage.getItem('starcap_theme')||th
 setTheme(th);$('cp').value=th;$('cp').oninput=e=>setTheme(e.target.value);draw();
 $('tico').innerHTML=ic('orbit',104);$('go').textContent=S.life>0?'Continue':'Start';
 $('ts').textContent=S.life>0?'Lifetime earnings ₵'+f(S.life)+(S.dm-S.sp>0?' · '+(S.dm-S.sp)+' Dark Matter':''):'A space fleet idle game';
-$('go').onclick=()=>{const t=$('title');t.classList.add('out');setTimeout(()=>t.remove(),600)};
+let started=0;const go=()=>{if(started)return;started=1;const t=$('title');t.classList.add('out');setTimeout(()=>t.remove(),450)};$('go').addEventListener('pointerup',go);$('go').addEventListener('click',go);
 if(PT){$('away').hidden=false;$('away').textContent=PT}
 if(document.fullscreenEnabled)$('fsb').hidden=false;
 let last=performance.now();
@@ -161,7 +162,7 @@ setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;step(dt);tk++
 setInterval(save,5000);addEventListener('beforeunload',save);document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});
 (function(){const c=document.createElement('canvas');c.id='sky';document.body.prepend(c);const x=c.getContext('2d'),rm=matchMedia('(prefers-reduced-motion:reduce)').matches;let W,H,st=[],sh=null;
 function rs(){const d=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);st=Array.from({length:Math.round(W*H/8000)},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.3,s:Math.random()*.12+.03,p:Math.random()*6.28,k:Math.random()<.18?1:Math.random()<.3?2:0}))}
-function fr(t){x.clearRect(0,0,W,H);for(const s of st){if(!rm){s.y+=s.s;if(s.y>H)s.y=0}x.globalAlpha=.3+.7*Math.abs(Math.sin(t/1300+s.p));x.fillStyle=s.k==1?(window.ACC||'#ff3dd8'):s.k==2?'#9fd8ff':'#fff';x.beginPath();x.arc(s.x,s.y,s.r,0,6.283);x.fill()}
+let lt=-1e3;function fr(t){if(!rm&&(document.getElementById('title')||t-lt<45)){requestAnimationFrame(fr);return}lt=t;x.clearRect(0,0,W,H);for(const s of st){if(!rm){s.y+=s.s;if(s.y>H)s.y=0}x.globalAlpha=.3+.7*Math.abs(Math.sin(t/1300+s.p));x.fillStyle=s.k==1?(window.ACC||'#ff3dd8'):s.k==2?'#9fd8ff':'#fff';x.beginPath();x.arc(s.x,s.y,s.r,0,6.283);x.fill()}
  if(!rm){if(!sh&&Math.random()<.004)sh={x:Math.random()*W*.8,y:Math.random()*H*.5,v:7+Math.random()*4};if(sh){x.globalAlpha=.8;x.strokeStyle='#fff';x.lineWidth=1.5;x.beginPath();x.moveTo(sh.x,sh.y);x.lineTo(sh.x-sh.v*6,sh.y-sh.v*2.5);x.stroke();sh.x+=sh.v;sh.y+=sh.v*.42;if(sh.x>W+80||sh.y>H+80)sh=null}requestAnimationFrame(fr)}}
 rs();addEventListener('resize',rs);fr(0)})();
 </script></body></html>
