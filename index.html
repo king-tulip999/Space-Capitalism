@@ -60,6 +60,8 @@
           var(--bg);
       }
       body {
+        min-height: 100vh;
+        min-height: 100lvh;
         max-width: 640px;
         margin: auto;
         padding: 0 10px calc(100px + env(safe-area-inset-bottom, 0px));
@@ -181,8 +183,8 @@
         font-size: 24px;
         font-weight: 700;
         background: color-mix(in srgb, var(--bg) 45%, transparent);
-        -webkit-backdrop-filter: blur(16px);
-        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(11px);
+        backdrop-filter: blur(11px);
         opacity: 0;
         pointer-events: none;
       }
@@ -283,8 +285,14 @@
         font: inherit;
       }
       .modes .on {
+        /* selected buy mode: filled, bright and glowing so it's obvious */
+        background: color-mix(in srgb, var(--acc) 30%, var(--card));
         border-color: var(--acc);
-        color: var(--acc);
+        color: var(--tx);
+        font-weight: 700;
+        box-shadow:
+          0 0 12px -3px var(--acc),
+          inset 0 0 0 1px var(--acc);
       }
 
       /* ---------- Cards and rows ---------- */
@@ -963,7 +971,7 @@
           <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
           <button id="wipeb" class="danger" data-a="wipe" data-i="0">Delete</button>
         </div>
-        <small class="bld">Build 9</small>
+        <small class="bld">Build 10</small>
       </details>
     </div>
     <div id="tut" hidden><div class="tc" id="tutc"></div></div>
