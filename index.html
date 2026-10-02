@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="lock">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -24,9 +24,11 @@
         --card: hsl(var(--h) 45% 11%);
         --card2: hsl(var(--h) 45% 17%);
         --bd: hsl(var(--h) 40% 28%);
-        --tx: #fbeaf8;
-        --mut: hsl(var(--h) 30% 85%);
-        --sub: #e9e2f3; /* small description text */
+        /* text hierarchy: --tx primary, --sub secondary, --dim tertiary; important values use accent colors */
+        --tx: #f0eaf5;
+        --sub: #a69aaa;
+        --dim: #6f6174;
+        --mut: var(--sub);
         --acc: #ff3dd8;
         --gold: #ffc65a;
         --ok: #3de68f;
@@ -77,13 +79,22 @@
         -webkit-user-select: text;
         user-select: text;
       }
-      #sky {
+      html.lock,
+      html.lock body {
+        overflow: hidden;
+        height: 100%;
+      } /* no scrolling behind the title screen */
+      #sky,
+      #deep {
         position: fixed;
         inset: 0;
         width: 100%;
         height: 100%;
         z-index: -1;
         pointer-events: none;
+      }
+      #deep {
+        z-index: -2;
       }
 
       /* ---------- Top stats ---------- */
@@ -93,9 +104,19 @@
         z-index: 5;
         margin: calc(-1 * env(safe-area-inset-top, 0px)) -10px 8px;
         padding: calc(env(safe-area-inset-top, 0px) + 20px) 10px 6px;
+      }
+      #top::before {
+        /* blurred backdrop that fades out at its bottom edge instead of ending in a hard line */
+        content: "";
+        position: absolute;
+        inset: 0 0 -28px 0;
+        z-index: -1;
+        pointer-events: none;
         background: color-mix(in srgb, var(--bg) 40%, transparent);
         -webkit-backdrop-filter: blur(24px) saturate(1.5);
         backdrop-filter: blur(24px) saturate(1.5);
+        -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 46px), transparent);
+        mask-image: linear-gradient(to bottom, #000 calc(100% - 46px), transparent);
       }
       #hdw {
         position: relative;
@@ -126,9 +147,16 @@
       }
       #hd small {
         display: block;
-        color: #f1eaf8;
+        color: color-mix(in srgb, var(--k) 22%, var(--sub));
         font-size: 11px;
         line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #hd small i {
+        font-style: normal;
+        color: color-mix(in srgb, var(--k) 55%, var(--dim));
       }
       #hd b {
         display: block;
@@ -249,7 +277,7 @@
         flex: 1;
         padding: 6px;
         background: var(--card);
-        color: var(--tx);
+        color: var(--sub);
         border: 1px solid var(--bd);
         border-radius: 8px;
         font: inherit;
@@ -285,14 +313,20 @@
         min-width: 0;
       }
       .row b {
-        color: #fff;
+        color: var(--tx);
       }
       .row small {
         display: block;
         color: var(--sub);
       }
       .row small b {
-        color: #fff;
+        color: var(--tx);
+      }
+      .row.st span {
+        color: var(--sub);
+      } /* stats: label muted, value in the tab color */
+      .row.st b {
+        color: var(--tabc, var(--tx));
       }
       #pane .row,
       #pane2 .row {
@@ -300,6 +334,36 @@
       } /* --tabc is the current tab's color */
       #setb .row {
         border-left: 4px solid #7ee0ff;
+      }
+      #setd summary {
+        /* collapsed by default; tap to open */
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin: 18px 0 8px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--bd);
+        background: color-mix(in srgb, var(--card) 80%, transparent);
+        color: var(--sub);
+        font-weight: 700;
+      }
+      #setd summary::-webkit-details-marker {
+        display: none;
+      }
+      #setd summary::after {
+        content: "";
+        width: 7px;
+        height: 7px;
+        margin-right: 4px;
+        border-right: 2px solid var(--sub);
+        border-bottom: 2px solid var(--sub);
+        transform: rotate(45deg) translateY(-2px);
+      }
+      #setd[open] summary::after {
+        transform: rotate(-135deg) translateY(-2px);
       }
 
       /* fleet card parts */
@@ -315,7 +379,7 @@
         justify-content: center;
         background: var(--card2);
         border: 2px solid var(--bd);
-        color: var(--mut);
+        color: var(--dim);
         line-height: 1;
         cursor: pointer;
       }
@@ -325,9 +389,12 @@
       }
       .ic b {
         margin-top: 2px;
-        color: var(--gold);
+        color: var(--dim);
         font-size: 12px;
       }
+      .card.on .ic b {
+        color: var(--c);
+      } /* level count in the fleet's color */
       .card.on .ic {
         border-color: var(--c);
         color: var(--c);
@@ -339,11 +406,8 @@
       }
       .nm {
         margin-bottom: 4px;
-        color: #fff;
+        color: var(--tx);
         font-weight: 700;
-      }
-      .card:not(.on) .nm {
-        color: #f3ecfa;
       }
       .ms {
         display: block;
@@ -351,6 +415,10 @@
         color: var(--sub);
         font-size: 11px;
       }
+      .ms i {
+        font-style: normal;
+        color: color-mix(in srgb, var(--c, var(--sub)) 35%, var(--dim));
+      } /* "(95 to go)" */
       .bar {
         position: relative;
         height: 22px;
@@ -377,6 +445,18 @@
         text-align: center;
         font-size: 12px;
         line-height: 20px;
+        color: var(--sub);
+        text-shadow:
+          0 0 2px #000,
+          0 1px 3px rgba(0, 0, 0, 0.95),
+          0 0 8px rgba(0, 0, 0, 0.6);
+      }
+      .bar span b {
+        color: color-mix(in srgb, var(--c, var(--tx)) 60%, var(--tx));
+      } /* the payout in the fleet's color; the time stays muted */
+      .bar span .nb {
+        color: var(--dim);
+        text-shadow: none;
       }
 
       /* ---------- Buttons ---------- */
@@ -407,17 +487,17 @@
       /* ---------- Section text ---------- */
       .tip {
         margin: 8px 2px;
-        color: #f4eefa;
+        color: var(--sub);
       }
       .tip b {
-        color: var(--tabc, #fff);
+        color: var(--tabc, var(--tx));
         font-size: 16px;
         letter-spacing: 0.2px;
       }
       .tip:has(b) {
         margin: 16px 2px 9px;
         padding-bottom: 5px;
-        border-bottom: 1.5px solid color-mix(in srgb, var(--tabc, #fff) 45%, transparent);
+        border-bottom: 1.5px solid color-mix(in srgb, var(--tabc, var(--tx)) 45%, transparent);
       }
       .hint {
         margin: 10px 2px 0;
@@ -457,7 +537,7 @@
         display: block;
         margin: 4px 0 10px;
         text-align: center;
-        color: var(--mut);
+        color: var(--dim);
       }
       #sv {
         width: 100%;
@@ -537,7 +617,6 @@
         background: color-mix(in srgb, var(--card) 70%, transparent);
         color: var(--gold);
       }
-      #go,
       #tg,
       #end button {
         border: 0;
@@ -546,11 +625,15 @@
         font: inherit;
         font-weight: 700;
       }
-      #go {
-        margin-top: 30px;
-        padding: 14px 48px;
-        border-radius: 30px;
-        font-size: 18px;
+      #title #go {
+        margin: 44px 0 0;
+        color: var(--tx);
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-shadow:
+          0 0 14px var(--acc),
+          0 0 2px var(--acc);
       }
       #ts {
         display: block;
@@ -581,11 +664,51 @@
       #tut li {
         margin: 9px 0;
       }
+      #tut .tc {
+        max-height: 82vh;
+        overflow-y: auto;
+      }
+      #tut p {
+        margin: 8px 0;
+        color: var(--sub);
+        line-height: 1.45;
+      }
+      #tut p b {
+        color: var(--tx);
+      }
+      .tdots {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin: 16px 0 4px;
+      }
+      .tdots i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+      }
+      .tdots i.on {
+        background: var(--acc);
+      }
+      .tnav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+      }
       #tg {
-        display: block;
-        margin: 14px auto 0;
-        padding: 11px 36px;
+        padding: 11px 30px;
         border-radius: 24px;
+      }
+      .tb2 {
+        padding: 11px 22px;
+        border-radius: 24px;
+        background: none;
+        border: 1px solid var(--bd);
+        color: var(--tx);
+        font: inherit;
+        font-weight: 700;
       }
 
       #end {
@@ -634,10 +757,10 @@
       }
       @keyframes pp {
         to {
-          transform: translateY(-28px);
+          transform: translate(var(--dx, 0), -28px);
           opacity: 0;
         }
-      }
+      } /* each number drifts a little sideways too */
       .card.mf {
         animation: mflash 0.8s;
       }
@@ -683,21 +806,27 @@
         #tico {
           animation: fl 5s ease-in-out infinite;
         }
+        #go {
+          animation: gp 2.4s ease-in-out infinite;
+        } /* gentle pulse on the tap prompt */
         @keyframes fl {
           50% {
             transform: translateY(-10px) rotate(6deg);
           }
         }
-        #bhv .dk {
-          animation: dko 2.4s linear infinite;
+        #bhv .pulse {
+          transform-box: fill-box;
+          transform-origin: center;
+          animation: bpulse 4.5s ease-in-out infinite;
         }
-        @keyframes dko {
-          to {
-            stroke-dashoffset: -112;
+        @keyframes bpulse {
+          50% {
+            transform: scale(1.07);
+            opacity: 0.82;
           }
         }
-        #bhv .glow {
-          animation: gp 4s ease-in-out infinite;
+        #bhv .ring2 {
+          animation: gp 3s ease-in-out infinite;
         }
         @keyframes gp {
           50% {
@@ -713,10 +842,14 @@
 
       /* ---------- Low effects setting ---------- */
       .low #sky,
+      .low #deep,
       .low .pop {
         display: none;
       }
-      .low #top,
+      .low #bhv .pulse {
+        filter: none;
+      }
+      .low #top::before,
       .low #nav,
       .low #tn {
         -webkit-backdrop-filter: none;
@@ -732,7 +865,8 @@
         <h1>Space Capitalism</h1>
         <p>Build a fleet. Hire a crew. Own the galaxy.</p>
         <div id="away" hidden></div>
-        <button id="go">Start</button><small id="ts"></small>
+        <small id="ts"></small>
+        <p id="go">Tap anywhere to start</p>
       </div>
     </div>
     <div id="top">
@@ -744,91 +878,95 @@
     <div id="modes" class="modes"></div>
     <div id="fleet"></div>
     <div id="bhv" hidden>
-      <svg viewBox="0 0 200 200" width="230" height="230" aria-hidden="true">
+      <svg viewBox="0 0 300 300" width="290" height="290" aria-hidden="true">
         <defs>
-          <radialGradient id="bhg">
-            <stop offset="34%" stop-color="#000" />
-            <stop offset="42%" stop-color="#ffb46b" stop-opacity=".95" />
-            <stop offset="58%" stop-color="#d14cff" stop-opacity=".35" />
-            <stop offset="100%" stop-color="#000" stop-opacity="0" />
+          <filter id="liq" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="2" seed="4" result="n">
+              <animate
+                attributeName="baseFrequency"
+                dur="16s"
+                values="0.011 0.018;0.019 0.011;0.011 0.018"
+                repeatCount="indefinite"
+              />
+            </feTurbulence>
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="n"
+              scale="22"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+            <feGaussianBlur stdDeviation="2.5" />
+          </filter>
+          <filter id="bsoft" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="5" />
+          </filter>
+          <radialGradient id="bhalo">
+            <stop offset="30%" stop-color="#fff6e0" stop-opacity="0" />
+            <stop offset="35%" stop-color="#fff3d1" />
+            <stop offset="42%" stop-color="#ffc061" stop-opacity=".95" />
+            <stop offset="56%" stop-color="#ff7a2e" stop-opacity=".55" />
+            <stop offset="74%" stop-color="#b8325a" stop-opacity=".2" />
+            <stop offset="100%" stop-color="#3a0a2e" stop-opacity="0" />
           </radialGradient>
-          <linearGradient id="bhd" x1="0" x2="1">
-            <stop offset="0" stop-color="#ffd08a" />
-            <stop offset=".5" stop-color="#ff5fa2" />
-            <stop offset="1" stop-color="#8b5cf6" />
+          <linearGradient id="bdisk" x1="0" x2="1">
+            <stop offset="0" stop-color="#ff6a2a" stop-opacity="0" />
+            <stop offset=".18" stop-color="#ffb44f" stop-opacity=".85" />
+            <stop offset=".5" stop-color="#fffaf0" />
+            <stop offset=".82" stop-color="#ffb44f" stop-opacity=".85" />
+            <stop offset="1" stop-color="#ff6a2a" stop-opacity="0" />
           </linearGradient>
         </defs>
-        <circle class="glow" cx="100" cy="100" r="96" fill="url(#bhg)" />
-        <ellipse
-          class="dk"
-          cx="100"
-          cy="100"
-          rx="92"
-          ry="20"
+        <g class="pulse" filter="url(#liq)"><circle cx="150" cy="150" r="142" fill="url(#bhalo)" /></g>
+        <circle
+          class="ring2"
+          cx="150"
+          cy="150"
+          r="58"
           fill="none"
-          stroke="url(#bhd)"
-          stroke-width="6"
-          stroke-dasharray="46 10"
+          stroke="#ffcf7a"
+          stroke-width="12"
+          filter="url(#bsoft)"
         />
-        <circle cx="100" cy="100" r="33" fill="#000" stroke="#ffd59a" stroke-width="1.5" />
-        <path
-          class="dk"
-          d="M8 100A92 20 0 0 0 192 100"
-          fill="none"
-          stroke="url(#bhd)"
-          stroke-width="6"
-          stroke-dasharray="46 10"
-        />
+        <circle cx="150" cy="150" r="50" fill="#000" />
+        <circle class="ring1" cx="150" cy="150" r="51.5" fill="none" stroke="#fff4d6" stroke-width="2" />
+        <ellipse cx="150" cy="150" rx="146" ry="10" fill="url(#bdisk)" filter="url(#bsoft)" opacity=".9" />
+        <ellipse cx="150" cy="150" rx="132" ry="2.4" fill="url(#bdisk)" />
       </svg>
     </div>
     <div id="pane"></div>
-    <div id="setb" hidden>
-      <div class="row">
-        <div><b>Theme color</b><small>Changes the accent color across the game.</small></div>
-        <input type="color" id="cp" aria-label="Theme color" />
-      </div>
-      <div class="row" id="fsr" hidden>
-        <div><b>Full screen</b><small>Hide the browser bars.</small></div>
-        <button id="fsb" data-a="fs" data-i="0">Toggle</button>
-      </div>
-      <div class="row">
-        <div>
-          <b>Back up your save</b
-          ><small>Export makes a save code you can keep or move to another device. Import loads one.</small>
-        </div>
-        <span class="bp"
-          ><button data-a="exp" data-i="0">Export</button
-          ><button data-a="imp" data-i="0">Import</button></span
-        >
-      </div>
-      <textarea id="sv" hidden rows="3"></textarea>
-      <div class="row">
-        <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
-        <button id="wipeb" class="danger" data-a="wipe" data-i="0">Delete</button>
-      </div>
-      <small class="bld">Build 9</small>
-    </div>
     <div id="pane2"></div>
-    <div id="tut" hidden>
-      <div class="tc">
-        <h2>How to play</h2>
-        <ol>
-          <li><b>Build</b> your first Solar Array with the Buy button.</li>
-          <li>
-            <b>Tap</b> a fleet's circle or bar to run it and earn credits. Hire its <b>Crew</b> to run it
-            automatically.
-          </li>
-          <li>Spend credits on <b>Upgrades</b>. Research Labs make <b>Science</b> to spend on Research.</li>
-          <li>Once you've earned a lot, <b>Warp</b> for Dark Matter, a permanent boost.</li>
-          <li>Check the <b>Stats</b> tab for bonuses and achievements.</li>
-          <li>
-            The end goal is in the <b>Black Hole</b> tab: build the Singularity Gate, charge it and cross the
-            event horizon. It's a long journey.
-          </li>
-        </ol>
-        <button id="tg">Got it</button>
-      </div>
+    <div id="setb" hidden>
+      <details id="setd">
+        <summary>Settings</summary>
+        <div id="setrows"></div>
+        <div class="row">
+          <div><b>Theme color</b><small>Changes the accent color across the game.</small></div>
+          <input type="color" id="cp" aria-label="Theme color" />
+        </div>
+        <div class="row" id="fsr" hidden>
+          <div><b>Full screen</b><small>Hide the browser bars.</small></div>
+          <button id="fsb" data-a="fs" data-i="0">Toggle</button>
+        </div>
+        <div class="row">
+          <div>
+            <b>Back up your save</b
+            ><small>Export makes a save code you can keep or move to another device. Import loads one.</small>
+          </div>
+          <span class="bp"
+            ><button data-a="exp" data-i="0">Export</button
+            ><button data-a="imp" data-i="0">Import</button></span
+          >
+        </div>
+        <textarea id="sv" hidden rows="3"></textarea>
+        <div class="row">
+          <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
+          <button id="wipeb" class="danger" data-a="wipe" data-i="0">Delete</button>
+        </div>
+        <small class="bld">Build 9</small>
+      </details>
     </div>
+    <div id="tut" hidden><div class="tc" id="tutc"></div></div>
     <div id="nav"></div>
     <div id="end" hidden>
       <div class="tw">
@@ -841,6 +979,38 @@
     </div>
     <div id="toast"></div>
     <script>
+      // Title screen: a tap anywhere on it continues. Set up first so nothing later can block it,
+      // and the page underneath stays locked at the top so the tap target can't drift.
+      let started = 0;
+      function go() {
+        if (started) return;
+        started = 1;
+        document.documentElement.classList.remove("lock");
+        const t = document.getElementById("title");
+        if (t) {
+          t.classList.add("out");
+          setTimeout(() => t.remove(), 450);
+        }
+        try {
+          if (!S.set.tut) showTut();
+        } catch (e) {}
+      }
+      ["pointerup", "touchend", "click"].forEach((ev) =>
+        document.getElementById("title").addEventListener(ev, go),
+      );
+      scrollTo(0, 0);
+      // Show start-up errors on the title screen instead of failing silently
+      addEventListener("error", (e) => {
+        const t = document.getElementById("ts");
+        if (t) {
+          t.textContent =
+            "Something went wrong: " +
+            e.message +
+            (e.lineno ? " (line " + e.lineno + ")" : "") +
+            ". A screenshot of this helps fix it.";
+          t.style.color = "#ff8a8a";
+        }
+      });
       // Helpers and icons (hand-drawn 24×24 outline SVGs)
       const $ = (id) => document.getElementById(id),
         SK = "starcap1";
@@ -1094,7 +1264,7 @@
           return 1e3 * (Math.max(10, q + 1) / 10) ** 5;
         };
       // ===== End goal: Singularity Gate charge (CH = charge needed) and Gate amplifiers =====
-      const CH = 2.2e7,
+      const CH = 2.5e7,
         AMP = [
           ["Gravity Lens", "credits", 1e50, 1e4, 0.1],
           ["Tachyon Coils", "Science", 1e21, 100, 0.1],
@@ -1188,7 +1358,25 @@
         ["Own 25 of every fleet", () => mn() >= 25, 3e8],
         ["Build an Event Horizon Array", () => lv(28) >= 1, 1e9],
         ["Build the Singularity Gate", () => lv(29) >= 1, 3e9],
+        ["Own 100 Solar Arrays", () => lv(0) >= 100, 20],
+        ["Buy 10 upgrades", () => upn() >= 10, 200],
+        ["Build a Dyson Swarm", () => lv(7) >= 1, 2e3],
+        ["Build a Rift Engine", () => lv(9) >= 1, 2e4],
+        ["Warp 3 times", () => S.warps >= 3, 5e4],
+        ["Complete 10 research", () => Object.keys(S.tech).length >= 10, 2e5],
+        ["Hire 20 crew", () => S.mgr.filter((x) => x).length >= 20, 5e5],
+        ["Buy 50 upgrades", () => upn() >= 50, 1e6],
+        ["Earn 1,000 Dark Matter in total", () => S.dmAll >= 1e3, 2e6],
+        ["Build a Magnetar Forge", () => lv(21) >= 1, 5e6],
+        ["Buy 150 upgrades", () => upn() >= 150, 3e7],
+        ["Complete 25 research", () => Object.keys(S.tech).length >= 25, 1e8],
+        ["Buy a Gate amplifier", () => S.amp.some((x) => x), 5e9],
+        ["Own 100 of every fleet", () => mn() >= 100, 1e10],
+        ["Charge the Singularity Gate to 50%", () => bhp() >= 0.5, 2e10],
+        ["Earn ₵1Vg lifetime", () => S.life >= 1e63, 3e10],
+        ["Buy 250 upgrades", () => upn() >= 250, 5e10],
       ];
+      const upn = () => S.up.reduce((a, b) => a + b, 0);
       // ===== Save data: everything the game stores =====
       const def = () => ({
         cash: 4,
@@ -1338,7 +1526,7 @@
           if (QU(a[0])) m *= a[1];
         });
         m *= 1 + 0.01 * Object.keys(S.ach).length;
-        if (Date.now() < S.boostEnd) m *= 2;
+        if (Date.now() < S.boostEnd) m *= bx();
         return m;
       }
       // Per-fleet speed, cycle time and profit
@@ -1388,10 +1576,15 @@
         mt = (i) => {
           const t = SPD.find((x) => x > lv(i));
           return t
-            ? "Next ×2 speed at level " + t + " (" + (t - lv(i)) + " to go)"
+            ? "Next ×2 speed at level " + t + " <i>(" + (t - lv(i)) + " to go)</i>"
             : "All speed milestones reached";
         };
-      const kf = (i) => (mode == "max" ? Math.max(1, maxk(i, S.cash)) : mode == "next" ? nm(i) : mode);
+      const kf = (i) =>
+        mode == "max"
+          ? Math.max(1, maxk(i, S.cash))
+          : mode == "next"
+            ? Math.max(1, Math.min(nm(i), maxk(i, S.cash)))
+            : mode;
       const ips = () => {
         let t = 0;
         for (let i = 0; i < C; i++) if (S.mgr[i] && lv(i)) t += prof(i) / cyc(i);
@@ -1408,6 +1601,9 @@
         if (!c) return;
         const e = document.createElement("span");
         e.className = "pop";
+        e.style.right = 100 + Math.random() * 130 + "px";
+        e.style.top = -2 + Math.random() * 34 + "px";
+        e.style.setProperty("--dx", Math.random() * 30 - 15 + "px");
         e.textContent = typeof v == "number" ? "+" + f(v) : v;
         e.style.color = COL[i];
         c.appendChild(e);
@@ -1435,7 +1631,49 @@
           o.stop(a.currentTime + 0.08);
         } catch (e) {}
       }
+      const TUT = [
+        [
+          "Welcome to Space Capitalism",
+          "<p>Build a space empire that keeps earning even while you're away. Start with a single Solar Array and grow until you can reach the black hole at the edge of the galaxy.</p><p>This guide takes a minute. You can reopen it any time from <b>Settings</b> on the Stats tab.</p>",
+        ],
+        [
+          "Fleets",
+          "<p>Tap <b>Build</b> to buy your first Solar Array, then tap the fleet's card to run it. When the bar fills you earn credits.</p><p>Each level adds profit. Every 25, 50, 100, 200 and so on levels <b>doubles that fleet's speed</b>; the line under its name shows the next one. The buy modes at the top (×1, ×10, ×100, Max, Next) set how many you buy per tap. Next buys exactly enough to reach the next speed boost.</p><p>Building a fleet unlocks the next, more advanced one. There are 30.</p>",
+        ],
+        [
+          "Crew and upgrades",
+          "<p><b>Crew</b> run a fleet automatically, forever. Fleets with crew keep earning while you're away (at half speed until you research Cryo-Sleep).</p><p><b>Upgrades</b> give each fleet 10 boosts to profit and speed, bought in order. The buttons at the top of the Crew and Upgrades tabs buy everything you can afford at once.</p>",
+        ],
+        [
+          "Research and missions",
+          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. <b>Achievements</b> on the Stats tab add +1% profit each.</p>",
+        ],
+        [
+          "Warp and Dark Matter",
+          "<p>Once you've earned enough credits in total (about ₵2B for the first one), <b>Warp</b> resets your fleets, crew, upgrades and credits, and gives you <b>Dark Matter</b>. You keep Science, research, missions and achievements.</p><p>Every Dark Matter gives <b>+2% profit</b> (the bonus grows more slowly past 1,000), so you rebuild much faster each time. You can spend Dark Matter on powerful upgrades, but spending it lowers the bonus.</p><p>The Warp tab tells you how much a warp would multiply your Dark Matter. A red dot on its icon means now is a good time, usually around ×2.</p>",
+        ],
+        [
+          "Ascension and Quasar Cores",
+          "<p><b>Ascension</b> is a bigger reset, unlocked after earning 1,000 Dark Matter since your last ascension. It resets everything, including Dark Matter, research and missions, in exchange for <b>Quasar Cores</b>.</p><p>Each core gives <b>+10% profit and +10% more Dark Matter</b> from every warp, and that bonus is never spent away. Core upgrades like Head Start and Auto-Crew make each new run start fast. Ascending is worth it when the hint says your cores would grow by about ×1.5 or more.</p>",
+        ],
+        [
+          "The black hole",
+          "<p>The goal of the game is on the <b>Black Hole</b> tab. Build the <b>Singularity Gate</b>, your 30th fleet, and it starts charging. The more digits your income has, the faster it charges.</p><p>Charge is never lost: it survives warps and ascensions and builds offline. <b>Gate amplifiers</b> speed it up. At 100%, cross the event horizon to finish the game. It's a long journey of 100+ hours.</p>",
+        ],
+        [
+          "Tips",
+          "<p>On the <b>Stats</b> tab: the <b>daily bonus</b> pays six hours of income, and the <b>power boost</b> triples your profit for 30 minutes, getting stronger with each Ascension. A red dot shows when one is ready.</p><p>Your game saves automatically. Use <b>Export</b> in Settings now and then to keep a backup code.</p>",
+        ],
+      ];
+      let tp = 0;
+      function renderTut() {
+        const last = tp == TUT.length - 1;
+        $("tutc").innerHTML =
+          `<h2>${TUT[tp][0]}</h2>${TUT[tp][1]}<div class="tdots">${TUT.map((_, i) => `<i class="${i == tp ? "on" : ""}"></i>`).join("")}</div><div class="tnav">${tp ? '<button class="tb2" data-a="tutp" data-i="0">Back</button>' : '<button class="tb2" data-a="tutx" data-i="0">Skip</button>'}<button id="tg" data-a="${last ? "tutx" : "tutn"}" data-i="0">${last ? "Start playing" : "Next"}</button></div>`;
+      }
       function showTut() {
+        tp = 0;
+        renderTut();
         $("tut").hidden = false;
       }
       // ===== Achievements. Old ones keep their order so saves stay valid; new ones are appended =====
@@ -1595,6 +1833,7 @@
           (r >= 1.5 ? "Good time to ascend." : "Most players wait for ×1.5 or more.")
         );
       }
+      const bx = () => Math.min(10, 3 + 0.25 * S.asc); // power boost: ×3, +0.25 per Ascension, up to ×10
       const goodWarp = () => {
           const p = pot();
           return p >= 3 && (!S.dm || p >= S.dm);
@@ -1719,14 +1958,14 @@
         } else if (a == "tut") showTut();
         else if (a == "daily") {
           if (Date.now() >= S.daily) {
-            const g = Math.max(1000, ips() * 3600);
+            const g = Math.max(1000, ips() * 21600);
             S.cash += g;
             S.daily = Date.now() + 72e6;
             toast("Daily bonus: +₵" + f(g));
           }
         } else if (a == "boost") {
           if (Date.now() >= S.boostNext) {
-            S.boostEnd = Date.now() + 6e5;
+            S.boostEnd = Date.now() + 18e5;
             S.boostNext = Date.now() + 216e5;
           }
         } else if (a == "fs") {
@@ -1842,6 +2081,16 @@
             S.cash -= bc;
             S.up[b]++;
           }
+        } else if (a == "tutn") {
+          tp = Math.min(TUT.length - 1, tp + 1);
+          renderTut();
+        } else if (a == "tutp") {
+          tp = Math.max(0, tp - 1);
+          renderTut();
+        } else if (a == "tutx") {
+          $("tut").hidden = true;
+          S.set.tut = 1;
+          save();
         } else if (a == "endx") {
           $("end").hidden = true;
         } else if (a == "qu") {
@@ -1919,7 +2168,8 @@
       const row = (t, d, b) => `<div class="row"><div><b>${t}</b><small>${d}</small></div>${b}</div>`;
       function pane() {
         $("pane").dataset.t = tab;
-        let AH = "";
+        let AH = "",
+          SR = "";
         $("pane").style.setProperty("--tabc", TC[tab]);
         $("pane2").style.setProperty("--tabc", TC[tab]);
         $("bhv").hidden = tab != 7;
@@ -1947,16 +2197,19 @@
           ];
           h +=
             sec("Bonuses") +
-            row("Daily bonus", "One hour of your income, free", cl(S.daily, "daily", "Claim")) +
+            row("Daily bonus", "Six hours of your income, free", cl(S.daily, "daily", "Claim")) +
             row(
               "Power boost",
-              "×2 profit for 10 minutes" + (n < S.boostEnd ? " · active " + fT((S.boostEnd - n) / 1000) : ""),
+              "×" +
+                +bx().toFixed(2) +
+                " profit for 30 minutes (+0.25× per Ascension, up to ×10)" +
+                (n < S.boostEnd ? " · active " + fT((S.boostEnd - n) / 1000) : ""),
               cl(S.boostNext, "boost", "Start"),
             );
           h +=
-            sec("Stats") + st.map((r) => `<div class="row"><div>${r[0]}</div><b>${r[1]}</b></div>`).join("");
-          h +=
-            sec("Settings") +
+            sec("Stats") +
+            st.map((r) => `<div class="row st"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("");
+          SR =
             row(
               "Number format",
               ["Short (1.23M)", "Scientific (1.23e6)", "Engineering (12.3e6)"][S.set.fmt],
@@ -2049,13 +2302,17 @@
         }
         $("pane").innerHTML = h;
         $("pane2").innerHTML = AH;
+        if (tab == 6) $("setrows").innerHTML = SR;
         $("setb").hidden = tab != 6;
       }
       function build() {
-        $("nav").innerHTML = NAMES.map(
-          (n, i) =>
-            `<button data-a="tab" data-i="${i}" id="n${i}" aria-label="${n}">${ic(TI[i], 22)}</button>`,
-        ).join("");
+        $("nav").innerHTML = [0, 1, 2, 3, 4, 5, 7, 6]
+          .map((i) => [NAMES[i], i])
+          .map(
+            ([n, i]) =>
+              `<button data-a="tab" data-i="${i}" id="n${i}" aria-label="${n}">${ic(TI[i], 22)}</button>`,
+          )
+          .join("");
         $("modes").innerHTML = MODES.map(
           (m) =>
             `<button data-a="mode" data-i="${m}" id="m${m}">${m == "max" ? "Max" : m == "next" ? "Next" : "×" + m}</button>`,
@@ -2072,7 +2329,7 @@
         if (ps > S.best) S.best = ps;
         const bo = Date.now() < S.boostEnd;
         $("hd").innerHTML =
-          `<div><small>Credits</small><b>₵${f(S.cash)}</b></div><div><small>Income / sec${bo ? " · ×2 " + fT((S.boostEnd - Date.now()) / 1000) : ""}</small><b>₵${f(ps)}</b></div><div><small>${ic("flask", 12)} Science</small><b>${f(S.sci)}</b></div><div><small>${ic("hole", 12)} Dark Matter</small><b>${fi(S.dm - S.sp)}</b></div>`;
+          `<div><small>Credits <i>· Profit ×${f(gm())}</i></small><b>₵${f(S.cash)}</b></div><div><small>Income/s${bo ? "<i> · Profit ×" + +bx().toFixed(2) + " · " + fT((S.boostEnd - Date.now()) / 1000) + "</i>" : ""}</small><b>₵${f(ps)}</b></div><div><small>${ic("flask", 12)} Science</small><b>${f(S.sci)}</b></div><div><small>${ic("hole", 12)} Dark Matter</small><b>${fi(S.dm - S.sp)}</b></div>`;
         for (let i = 0; i < 8; i++) {
           const e = $("n" + i);
           if (e) e.className = i == tab ? "on" : "";
@@ -2098,17 +2355,33 @@
           for (let i = 0; i < N; i++) {
             {
               const cd = $("c" + i);
-              cd.style.opacity = vis(i) ? 1 : 0.45;
               cd.classList.toggle("on", lv(i) > 0);
             }
             const L = lv(i),
               c = cyc(i),
               k = kf(i),
               ok = mode == "max" ? maxk(i, S.cash) > 0 : S.cash >= cost(i, k);
+            $("c" + i).style.opacity = vis(i) || ok ? 1 : 0.45;
             $("l" + i).textContent = L;
             $("p" + i).style.width = (c < 0.12 && (S.run[i] || S.mgr[i]) ? 100 : S.prog[i] * 100) + "%";
-            $("t" + i).textContent = L ? f(prof(i)) + (i == C ? " Sci" : " ₵") + " · " + fT(c) : "Not built";
-            $("ms" + i).textContent = mt(i);
+            {
+              const e = $("t" + i),
+                h = L
+                  ? "<b>" + f(prof(i)) + (i == C ? " Sci" : " ₵") + "</b> · " + fT(c)
+                  : '<span class="nb">Not built</span>';
+              if (e._h !== h) {
+                e.innerHTML = h;
+                e._h = h;
+              }
+            }
+            {
+              const e = $("ms" + i),
+                h = mt(i);
+              if (e._h !== h) {
+                e.innerHTML = h;
+                e._h = h;
+              }
+            }
             const b = $("b" + i),
               bh = (L ? "Buy" : "Build") + " ×" + k + "<br>₵" + f(cost(i, k));
             if (b._h !== bh) {
@@ -2155,7 +2428,7 @@
       draw();
       $("tico").innerHTML = ic("orbit", 104);
       $("endi").innerHTML = ic("vortex", 90);
-      $("go").textContent = S.life > 0 ? "Continue" : "Start";
+      $("go").textContent = S.life > 0 ? "Tap anywhere to continue" : "Tap anywhere to start";
       $("ts").textContent =
         S.life > 0
           ? (S.won ? "Event horizon crossed · " : "Gate charge " + (bhp() * 100).toFixed(1) + "% · ") +
@@ -2166,27 +2439,12 @@
               ? " · Tip: back up your save with Export in Settings on the Stats tab"
               : "")
           : "A space fleet idle game";
-      let started = 0;
-      const go = () => {
-        if (started) return;
-        started = 1;
-        const t = $("title");
-        t.classList.add("out");
-        setTimeout(() => t.remove(), 450);
-        if (!S.set.tut) showTut();
-      };
-      $("go").addEventListener("pointerup", go);
-      $("go").addEventListener("click", go);
+
       if (PT) {
         $("away").hidden = false;
         $("away").textContent = PT;
       }
       document.body.classList.toggle("low", !S.set.fx);
-      $("tg").onclick = () => {
-        $("tut").hidden = true;
-        S.set.tut = 1;
-        save();
-      };
       if (document.fullscreenEnabled) $("fsr").hidden = false;
       let last = performance.now();
       setInterval(() => {
@@ -2207,15 +2465,53 @@
       document.addEventListener("gesturestart", (e) => e.preventDefault());
       // ===== Starfield background =====
       (function () {
-        const c = document.createElement("canvas");
+        const c = document.createElement("canvas"),
+          dc = document.createElement("canvas");
         c.id = "sky";
+        dc.id = "deep";
         document.body.prepend(c);
+        document.body.prepend(dc);
         const x = c.getContext("2d"),
-          rm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+          g = dc.getContext("2d"),
+          rm = matchMedia("(prefers-reduced-motion:reduce)").matches,
+          R = (a, b) => a + Math.random() * (b - a);
         let W,
           H,
           st = [],
           sh = null;
+        if (rm) document.querySelectorAll("#bhv animate").forEach((e) => e.remove());
+        // Static deep-space layer: soft nebula clouds, drawn once per resize
+        function deep(d) {
+          dc.width = W * d;
+          dc.height = H * d;
+          g.setTransform(d, 0, 0, d, 0, 0);
+          g.clearRect(0, 0, W, H);
+          const hues = [300, 195, 265, 20, 330, 175];
+          for (let i = 0; i < 5; i++) {
+            const cx = R(0, W),
+              cy = R(0, H),
+              r = R(0.35, 0.6) * Math.max(W, H),
+              h = hues[i % hues.length];
+            for (let k = 0; k < 3; k++) {
+              const ox = cx + R(-0.3, 0.3) * r,
+                oy = cy + R(-0.3, 0.3) * r,
+                rr = r * R(0.4, 0.9),
+                q = g.createRadialGradient(0, 0, 0, 0, 0, rr);
+              q.addColorStop(0, `hsla(${h + R(-20, 20)},90%,60%,${R(0.06, 0.11)})`);
+              q.addColorStop(0.5, `hsla(${h + R(-30, 30)},80%,45%,${R(0.03, 0.05)})`);
+              q.addColorStop(1, `hsla(${h},80%,45%,0)`);
+              g.save();
+              g.translate(ox, oy);
+              g.rotate(R(0, 3.14));
+              g.scale(1, R(0.5, 1));
+              g.fillStyle = q;
+              g.beginPath();
+              g.arc(0, 0, rr, 0, 6.283);
+              g.fill();
+              g.restore();
+            }
+          }
+        }
         function rs() {
           const d = Math.min(devicePixelRatio || 1, 2);
           W = innerWidth;
@@ -2223,7 +2519,8 @@
           c.width = W * d;
           c.height = H * d;
           x.setTransform(d, 0, 0, d, 0, 0);
-          st = Array.from({ length: Math.round((W * H) / 8000) }, () => ({
+          deep(d);
+          st = Array.from({ length: Math.round((W * H) / 5200) }, () => ({
             x: Math.random() * W,
             y: Math.random() * H,
             r: Math.random() * 1.4 + 0.3,
