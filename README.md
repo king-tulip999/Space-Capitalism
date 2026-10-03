@@ -18,8 +18,8 @@ It's inspired by *AdVenture Capitalist* and *AdVenture Communist*, merged into o
 - **36 missions and 78 achievements**, each adding permanent profit.
 - **Big moments:** warping, ascending and crossing the event horizon each play a short full-screen cinematic.
 - **Bonuses:** a daily bonus worth six hours of income, and a power boost that triples your profit for 30 minutes and grows stronger with every Ascension.
-- **Quality of life:** "buy all" and "hire all" buttons, a "Next ×2" buy mode, hints that tell you when to warp or ascend, red dots when missions or bonuses are ready, and number names up to Centillion (10³⁰³).
-- **Offline earnings,** so your fleets keep working while you're away. A power boost only counts for the time it had left.
+- **Quality of life:** "buy all" and "hire all" buttons, a "Next ×2" buy mode, progress on every mission, hints that tell you when to warp or ascend, red dots on any tab with something ready or affordable, short lists that fold away what's done or far off, and number names up to Centillion (10³⁰³).
+- **Offline earnings,** so your fleets keep working while you're away, whether you closed the app or just left it in the background. A power boost only counts for the time it had left.
 - **An 8-page tutorial** that explains every system, and can be reopened any time.
 - **Phone-first design:** swipe left or right anywhere below the top boxes to change tabs (stars streak past as you go), or use the bottom tab bar. The page only scrolls up and down. There's also a theme color picker, a low-effects mode and full-screen home screen support.
 
@@ -58,4 +58,4 @@ To run it locally, download `index.html` and open it in any modern browser.
 
 ## Version
 
-Current build: **Build 21**.
+Current build: **Build 22**.
