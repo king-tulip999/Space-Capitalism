@@ -167,7 +167,7 @@
         /* tab name: a small pill just above the tab bar for a moment after switching, so the top banner is never covered */
         position: fixed;
         left: 50%;
-        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px) - var(--gap, 0px));
         z-index: 8;
         display: flex;
         align-items: center;
@@ -190,16 +190,16 @@
         transform: translate(-50%, 0);
       }
       #tn.show ~ #toast {
-        bottom: calc(122px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(122px + env(safe-area-inset-bottom, 0px) - var(--gap, 0px));
       } /* a message steps up while the tab name shows */
 
       /* ---------- Bottom tab bar ---------- */
       #nav {
         position: fixed;
-        bottom: 0;
+        bottom: calc(-1 * var(--gap, 0px));
         left: 50%;
         transform: translateX(-50%);
-        z-index: 7;
+        z-index: 7; /* --gap: see fitScreen() */
         width: 100%;
         max-width: 640px;
         display: grid;
@@ -644,7 +644,7 @@
         /* short message above the tab bar; taps pass through it */
         position: fixed;
         left: 50%;
-        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px) - var(--gap, 0px));
         z-index: 9;
         width: max-content;
         max-width: calc(100% - 32px);
@@ -1097,7 +1097,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 20</small>
+          <small class="bld">Build 21</small>
         </details>
       </div>
     </main>
@@ -3268,6 +3268,17 @@
         if (away > 10) catchUp(away);
         S.savedAt = Date.now();
       }
+      // iPhone home-screen apps sometimes open with the page a little shorter than the screen, which lifts the tab bar off
+      // the bottom until the app is reopened. Measure the shortfall and move the bar (and the messages above it) back down.
+      function fitScreen() {
+        const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+        const gap = standalone && innerHeight > innerWidth ? screen.height - innerHeight : 0;
+        document.documentElement.style.setProperty("--gap", (gap > 0 && gap < 150 ? gap : 0) + "px");
+      }
+      fitScreen();
+      ["resize", "orientationchange", "pageshow"].forEach((type) => addEventListener(type, fitScreen));
+      document.addEventListener("visibilitychange", fitScreen);
+      [300, 1000, 2500].forEach((ms) => setTimeout(fitScreen, ms)); // iOS can settle the size a moment after launch
       load();
       build();
       applyTheme(S.settings.theme);
