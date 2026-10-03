@@ -58,4 +58,4 @@ To run it locally, download `index.html` and open it in any modern browser.
 
 ## Version
 
-Current build: **Build 22**.
+Current build: **Build 23**.

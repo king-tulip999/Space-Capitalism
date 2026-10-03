@@ -155,7 +155,7 @@
         /* tab name: a small pill just above the tab bar for a moment after switching, so the top banner is never covered */
         position: fixed;
         left: 50%;
-        bottom: calc(72px + env(safe-area-inset-bottom, 0px) - var(--gap, 0px));
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
         z-index: 8;
         display: flex;
         align-items: center;
@@ -178,16 +178,16 @@
         transform: translate(-50%, 0);
       }
       #tn.show ~ #toast {
-        bottom: calc(122px + env(safe-area-inset-bottom, 0px) - var(--gap, 0px));
+        bottom: calc(122px + env(safe-area-inset-bottom, 0px));
       } /* a message steps up while the tab name shows */
 
       /* ---------- Bottom tab bar ---------- */
       #nav {
         position: fixed;
-        bottom: calc(-1 * var(--gap, 0px));
+        bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 7; /* --gap: see fitScreen() */
+        z-index: 7;
         width: 100%;
         max-width: 640px;
         display: grid;
@@ -198,16 +198,6 @@
         -webkit-backdrop-filter: blur(14px);
         backdrop-filter: blur(14px);
         border-top: 1px solid var(--bd);
-      }
-      #nav::after {
-        /* the bar's background continues to the very bottom of the screen, so no seam can show beneath it */
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 100%;
-        height: 80px;
-        background: inherit;
       }
       #nav button {
         position: relative;
@@ -633,7 +623,7 @@
         /* short message above the tab bar; taps pass through it */
         position: fixed;
         left: 50%;
-        bottom: calc(76px + env(safe-area-inset-bottom, 0px) - var(--gap, 0px));
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
         z-index: 9;
         width: max-content;
         max-width: calc(100% - 32px);
@@ -1088,7 +1078,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 22</small>
+          <small class="bld">Build 23</small>
         </details>
       </div>
     </main>
@@ -3345,15 +3335,16 @@
         S.savedAt = Date.now();
       }
       // iPhone home-screen apps sometimes open with the page a little shorter than the screen, which lifts the tab bar off
-      // the bottom until the app is reopened. Measure the shortfall and move the bar (and the messages above it) back down.
+      // the bottom until the app is reopened. iOS won't draw anything in that missing strip, so the bar can't simply be moved
+      // down; instead, when the page comes up short, ask iOS to measure the screen again
       function fitScreen() {
-        const gap = navigator.standalone === true && innerHeight > innerWidth ? screen.height - innerHeight : 0; // navigator.standalone only exists on iPhone and iPad
-        document.documentElement.style.setProperty("--gap", (gap > 0 && gap < 150 ? gap : 0) + "px");
+        if (navigator.standalone !== true || innerHeight >= screen.height || innerHeight < innerWidth) return; // iPhone home screen, portrait, short
+        const meta = document.querySelector("meta[name=viewport]");
+        meta.setAttribute("content", meta.getAttribute("content"));
+        scrollTo(0, 0);
       }
-      fitScreen();
       ["resize", "orientationchange", "pageshow"].forEach((type) => addEventListener(type, fitScreen));
-      document.addEventListener("visibilitychange", fitScreen);
-      [300, 1000, 2500].forEach((ms) => setTimeout(fitScreen, ms)); // iOS can settle the size a moment after launch
+      [0, 300, 1000].forEach((ms) => setTimeout(fitScreen, ms));
       load();
       build();
       applyTheme(S.settings.theme);
