@@ -203,7 +203,7 @@
         width: 100%;
         max-width: 640px;
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 6px;
         padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 6px);
         background: color-mix(in srgb, var(--bg) 60%, transparent);
@@ -550,6 +550,16 @@
       }
       button.bulk {
         margin: 0 0 10px;
+      }
+      .bulk2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 4px;
+      } /* two bulk buttons side by side */
+      .bulk2 button.bulk {
+        margin: 0;
+        padding: 12px 6px;
       }
       button.dis {
         /* can't afford yet: greyed out and ignores taps */
@@ -1147,7 +1157,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 17</small>
+          <small class="bld">Build 18</small>
         </details>
       </div>
     </main>
@@ -1681,10 +1691,8 @@
       // ===== Tabs (in tab-bar order; swiping moves through them in this order) =====
       const TABS = [
         { key: "fleet", name: "Fleet", icon: "rocket", color: "#ffb020" },
-        { key: "crew", name: "Crew", icon: "crew", color: "#ff8a5b" },
         { key: "upgrades", name: "Upgrades", icon: "chev", color: "#5fd8ff" },
         { key: "research", name: "Research", icon: "flask", color: "#4be3a0" },
-        { key: "missions", name: "Missions", icon: "flag", color: "#ff8fd2" },
         { key: "warp", name: "Warp", icon: "hole", color: "#c58bff" },
         { key: "blackhole", name: "Black Hole", icon: "vortex", color: "#ff9d5c" },
       ];
@@ -2427,11 +2435,11 @@
         ],
         [
           "Crew and upgrades",
-          "<p><b>Crew</b> run a fleet automatically, forever. Fleets with crew keep earning while you're away (at half speed until you research Cryo-Sleep).</p><p><b>Upgrades</b> give each fleet 10 boosts to profit and speed, bought in order. The buttons at the top of the Crew and Upgrades tabs buy everything you can afford at once.</p>",
+          "<p><b>Crew</b> run a fleet automatically, forever. Fleets with crew keep earning while you're away (at half speed until you research Cryo-Sleep).</p><p><b>Upgrades</b> give each fleet 10 boosts to profit and speed, bought in order. Both are on the <b>Upgrades</b> tab, and the two buttons at its top buy everything you can afford at once.</p>",
         ],
         [
           "Research and missions",
-          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. A red dot on the Missions tab means one is ready. <b>Achievements</b>, below the black hole on its tab, add +1% profit each.</p>",
+          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. Missions are at the top of the Research tab, and a red dot on it means one is ready. <b>Achievements</b>, below the black hole on its tab, add +1% profit each.</p>",
         ],
         [
           "Warp and Dark Matter",
@@ -2546,7 +2554,7 @@
               ? goodWarp() || goodAscend()
               : t.key === "blackhole"
                 ? now >= S.dailyReadyAt || now >= S.boostReadyAt
-                : t.key === "missions"
+                : t.key === "research"
                   ? MISSIONS.some((m) => !S.missions[m.id] && m.done())
                   : false;
           b.classList.toggle("badge", badge);
@@ -2592,71 +2600,86 @@
             [stats, achievements] = PANES.stats();
           return [gate + stats, achievements];
         },
-        crew() {
-          let h = bulkButton(
-            "hireAll",
-            "Hire all affordable crew",
-            DISPLAY_ORDER.some((i) => level(i) && !S.crew[i] && S.cash >= crewCost(i)),
-          );
-          for (const i of DISPLAY_ORDER) {
-            const u = UNITS[i],
-              L = level(i);
-            const rate = L
-              ? i === LAB
-                ? `${fmt(payout(i) / cycleTime(i))} Science/s`
-                : `${money(payout(i) / cycleTime(i))}/s`
-              : "";
-            const desc = !L
-              ? "Build this fleet first"
-              : S.crew[i]
-                ? "Running automatically · " + rate
-                : "Runs it automatically: +" + rate;
-            const right = S.crew[i]
-              ? owned("Hired")
-              : btn("hire", i, "Hire<br>" + money(crewCost(i)), L > 0 && S.cash >= crewCost(i));
-            h += row(`${icon(u.icon, 16, u.color)} ${u.name} crew`, desc, right, L ? "" : " done");
-          }
-          return [h];
-        },
+        // Upgrades tab: crew and fleet upgrades together. Done items fold away so the list stays short
         upgrades() {
-          const built = DISPLAY_ORDER.filter((i) => i !== LAB && level(i));
-          if (!built.length) return [tip("Build a fleet to unlock its upgrades.")];
-          const cheapest = Math.min(...built.filter((i) => S.upgrades[i] < 10).map(upgradeCost));
+          const built = DISPLAY_ORDER.filter((i) => level(i));
+          if (!built.length) return [tip("Build a fleet to hire its crew and buy its upgrades.")];
+          const fleets = built.filter((i) => i !== LAB);
+          const cheapest = Math.min(...fleets.filter((i) => S.upgrades[i] < 10).map(upgradeCost));
           let h =
-            tip("Each fleet has 10 upgrades: bigger profit multipliers and faster cycles.") +
-            bulkButton("upgradeAll", "Buy all affordable upgrades", S.cash >= cheapest);
-          for (const i of built) {
+            `<div class="bulk2">${bulkButton(
+              "hireAll",
+              "Hire all crew",
+              built.some((i) => !S.crew[i] && S.cash >= crewCost(i)),
+            )}` + `${bulkButton("upgradeAll", "Buy all upgrades", S.cash >= cheapest)}</div>`;
+          const crewRow = (i) => {
+            const u = UNITS[i],
+              rate = i === LAB ? `${fmt(payout(i) / cycleTime(i))} Science/s` : `${money(payout(i) / cycleTime(i))}/s`;
+            return S.crew[i]
+              ? row(`${icon(u.icon, 16, u.color)} ${u.name} crew`, "Running automatically · " + rate, owned("Hired"))
+              : row(
+                  `${icon(u.icon, 16, u.color)} ${u.name} crew`,
+                  "Runs it automatically: +" + rate,
+                  btn("hire", i, "Hire<br>" + money(crewCost(i)), S.cash >= crewCost(i)),
+                );
+          };
+          const toHire = built.filter((i) => !S.crew[i]),
+            hired = built.filter((i) => S.crew[i]);
+          h +=
+            section("Crew") +
+            (toHire.length ? toHire.map(crewRow).join("") : tip("Every fleet you've built has crew."));
+          if (hired.length) h += fold("crew-hired", `Hired crew (${hired.length})`, hired.map(crewRow).join(""));
+          const upgradeRow = (i) => {
             const u = UNITS[i],
               n = S.upgrades[i];
-            h += row(
+            return row(
               `${icon(u.icon, 16, u.color)} ${u.name}`,
               (n < 10 ? UPGRADE_STEPS[n][0] : "All upgrades bought") + ` · ${n}/10`,
               n >= 10 ? owned("Maxed") : btn("upgrade", i, "Buy<br>" + money(upgradeCost(i)), S.cash >= upgradeCost(i)),
             );
-          }
+          };
+          const open = fleets.filter((i) => S.upgrades[i] < 10),
+            maxed = fleets.filter((i) => S.upgrades[i] >= 10);
+          h +=
+            section("Upgrades") +
+            tip("Each fleet has 10 upgrades: bigger profit multipliers and faster cycles.") +
+            open.map(upgradeRow).join("");
+          if (maxed.length)
+            h += fold("upgrades-maxed", `Fully upgraded (${maxed.length})`, maxed.map(upgradeRow).join(""));
           return [h];
         },
+        // Research tab: missions (which pay Science) first, then research (which spends it)
         research() {
-          let h = tip("Research Labs produce Science. Spend it on permanent tech that survives warps.");
-          for (const r of RESEARCH)
-            h += row(
+          const state = (m) => (S.missions[m.id] ? 2 : m.done() ? 0 : 1); // ready, in progress, claimed
+          const list = MISSIONS.map((m, n) => [m, state(m), n]).sort((a, b) => a[1] - b[1] || a[2] - b[2]);
+          const missionRow = ([m, st]) =>
+            row(
+              m.name,
+              `Reward: ${icon("flask", 12)} ${count(m.reward)} Science`,
+              st === 2 ? owned("Claimed") : btn("mission", m.id, "Claim", st === 0),
+            );
+          const active = list.filter((x) => x[1] < 2),
+            claimed = list.filter((x) => x[1] === 2);
+          let h =
+            section("Missions") +
+            tip(`Each claimed mission adds +${Math.round(M.missionBonus * 100)}% profit permanently.`) +
+            active.map(missionRow).join("");
+          if (claimed.length)
+            h += fold("missions-claimed", `Claimed missions (${claimed.length})`, claimed.map(missionRow).join(""));
+          const techRow = (r) =>
+            row(
               r.name,
               r.desc,
               S.research[r.id] ? owned("Done") : btn("research", r.id, sciencePrice(r.cost), S.science >= r.cost),
             );
-          return [h];
-        },
-        missions() {
-          const state = (m) => (S.missions[m.id] ? 2 : m.done() ? 0 : 1); // ready, in progress, claimed
-          const list = MISSIONS.map((m, n) => [m, state(m), n]).sort((a, b) => a[1] - b[1] || a[2] - b[2]);
-          let h = tip(`Each claimed mission adds +${Math.round(M.missionBonus * 100)}% profit permanently.`);
-          for (const [m, st] of list)
-            h += row(
-              m.name,
-              `Reward: ${icon("flask", 12)} ${count(m.reward)} Science`,
-              st === 2 ? owned("Claimed") : btn("mission", m.id, "Claim", st === 0),
-              st === 2 ? " done" : "",
-            );
+          const todo = RESEARCH.filter((r) => !S.research[r.id]),
+            done = RESEARCH.filter((r) => S.research[r.id]);
+          h +=
+            section("Research") +
+            tip("Research Labs produce Science. Spend it on permanent tech that survives warps.") +
+            (todo.length ? todo.map(techRow).join("") : tip("Every research is complete."));
+          if (done.length)
+            h += fold("research-done", `Completed research (${done.length})`, done.map(techRow).join(""));
           return [h];
         },
         warp() {
