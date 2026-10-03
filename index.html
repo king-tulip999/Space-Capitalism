@@ -272,9 +272,15 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         margin: 0 -10px;
-        padding: 10px 10px calc(100px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 10px 0;
         -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10px);
         mask-image: linear-gradient(to bottom, transparent, #000 10px); /* cards soften as they scroll out of sight */
+      }
+      #view::after {
+        /* room at the end of every tab so the last item can scroll clear of the tab bar (iPhones ignore bottom padding here) */
+        content: "";
+        display: block;
+        height: calc(96px + env(safe-area-inset-bottom, 0px));
       }
       #fleet {
         display: flex;
@@ -1078,7 +1084,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 24</small>
+          <small class="bld">Build 25</small>
         </details>
       </div>
     </main>
