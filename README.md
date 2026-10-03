@@ -1,5 +1,8 @@
 # Space Capitalism
 
+![Space Capitalism](Space Capitalism.png)
+
+
 A space-themed idle game that runs in your browser. Build fleets, hire crew, research new tech, warp for Dark Matter and, eventually, send your whole empire through a black hole.
 
 It's inspired by *AdVenture Capitalist* and *AdVenture Communist*, merged into one game with no ads and no in-app purchases. It isn't affiliated with or endorsed by those games or their makers.
