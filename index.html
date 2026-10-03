@@ -164,9 +164,38 @@
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+      #tn {
+        /* tab name: a small pill just above the tab bar for a moment after switching, so the top banner is never covered */
+        position: fixed;
+        left: 50%;
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        z-index: 8;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 16px;
+        border-radius: 20px;
+        background: var(--card2);
+        border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+        transform: translate(-50%, 8px);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #tn.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, 0);
+      }
+      #tn.show ~ #toast {
+        bottom: calc(122px + env(safe-area-inset-bottom, 0px));
+      } /* a message steps up while the tab name shows */
 
-      /* ---------- Bottom bar: menu button and the current tab's name ---------- */
-      #bar {
+      /* ---------- Bottom tab bar ---------- */
+      #nav {
         position: fixed;
         bottom: 0;
         left: 50%;
@@ -175,16 +204,15 @@
         width: 100%;
         max-width: 640px;
         display: grid;
-        grid-template-columns: 46px minmax(0, 1fr) 46px;
-        align-items: center;
-        gap: 10px;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 6px;
         padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 6px);
         background: color-mix(in srgb, var(--bg) 60%, transparent);
         -webkit-backdrop-filter: blur(14px);
         backdrop-filter: blur(14px);
         border-top: 1px solid var(--bd);
       }
-      #menuBtn {
+      #nav button {
         position: relative;
         height: 46px;
         padding: 0;
@@ -192,184 +220,31 @@
         align-items: center;
         justify-content: center;
         background: var(--card);
-        color: var(--tx);
+        color: var(--k);
         border: 1px solid var(--bd);
         border-radius: 12px;
         font: inherit;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
       }
-      #menuBtn.badge::after {
+      #nav button.on {
+        background: color-mix(in srgb, var(--k) 28%, var(--card));
+        border-color: var(--k);
+      }
+      #nav svg {
+        pointer-events: none;
+      }
+      #nav button.badge::after {
         content: "";
         position: absolute;
         top: 6px;
-        right: 7px;
+        right: 8px;
         width: 9px;
         height: 9px;
         border-radius: 50%;
         background: #ff5f5f;
-      }
-      #here {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-        min-width: 0;
-        color: var(--k);
-        cursor: pointer;
-      }
-      #hereName {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        max-width: 100%;
-        font-size: 18px;
-        font-weight: 700;
-        white-space: nowrap;
-      }
-      #dots {
-        display: flex;
-        gap: 5px;
-      }
-      #dots i {
-        width: 6px;
-        height: 6px;
-        border-radius: 3px;
-        background: rgba(255, 255, 255, 0.22);
-      }
-      #dots i.on {
-        width: 16px;
-        background: var(--k);
-      }
-      #bar svg,
-      #menu svg {
-        pointer-events: none;
-      }
-
-      /* ---------- Side menu ---------- */
-      #scrim {
-        position: fixed;
-        inset: 0;
-        z-index: 30;
-        background: rgba(0, 0, 0, 0.5);
-        -webkit-backdrop-filter: blur(3px);
-        backdrop-filter: blur(3px);
-        opacity: 0;
-        visibility: hidden;
-      }
-      #menu {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 31;
-        width: min(300px, 82vw);
-        overflow-y: auto;
-        padding: calc(env(safe-area-inset-top, 0px) + 18px) 12px calc(env(safe-area-inset-bottom, 0px) + 14px);
-        background: color-mix(in srgb, var(--card) 94%, var(--bg));
-        border-right: 1px solid var(--bd);
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.55);
-        transform: translateX(-105%);
-        visibility: hidden;
-      }
-      html.menu-open {
-        overflow: hidden;
-      }
-      html.menu-open #scrim {
-        opacity: 1;
-        visibility: visible;
-      }
-      html.menu-open #menu {
-        transform: none;
-        visibility: visible;
-      }
-      .mhead {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0 4px 14px;
-      }
-      .mhead b {
-        font-size: 21px;
-        font-weight: 800;
-        background: linear-gradient(90deg, #fff, var(--acc) 60%, #5fd8ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-      .mclose {
-        width: 40px;
-        height: 40px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--card2);
-        color: var(--sub);
-        border: 1px solid var(--bd);
-        border-radius: 12px;
-      }
-      .mitem {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        width: 100%;
-        margin-bottom: 4px;
-        padding: 8px 30px 8px 8px;
-        background: none;
-        color: var(--tx);
-        border: 1px solid transparent;
-        border-radius: 12px;
-        font: inherit;
-        text-align: left;
-      }
-      .mitem .mi {
-        flex: none;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 11px;
-        color: var(--k);
-        background: color-mix(in srgb, var(--k) 14%, var(--card2));
-      }
-      .mitem span {
-        min-width: 0;
-      }
-      .mitem b {
-        display: block;
-        font-size: 16px;
-      }
-      .mitem small {
-        display: block;
-        color: var(--sub);
-        font-size: 12px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .mitem.on {
-        background: color-mix(in srgb, var(--k) 15%, transparent);
-        border-color: color-mix(in srgb, var(--k) 55%, transparent);
-      }
-      .mitem.on b {
-        color: var(--k);
-      }
-      .mitem.badge::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        right: 12px;
-        width: 9px;
-        height: 9px;
-        margin-top: -4.5px;
-        border-radius: 50%;
-        background: #ff5f5f;
-      }
-      .msep {
-        height: 1px;
-        margin: 8px 6px 12px;
-        background: var(--bd);
       }
 
       /* ---------- Buy modes ---------- */
@@ -496,7 +371,7 @@
         border-left: 4px solid var(--tabc, var(--bd));
       } /* --tabc is the current tab's color */
       #setb .row {
-        border-left: 4px solid var(--tabc, var(--bd));
+        border-left: 4px solid #7ee0ff;
       }
       details.fold > summary {
         /* collapsed sections: Settings, "How it works" and locked achievements */
@@ -703,7 +578,7 @@
         margin: 4px 0 6px;
       }
 
-      /* ---------- Settings ---------- */
+      /* ---------- Settings (Stats tab) ---------- */
       #setb input[type="color"] {
         flex: none;
         width: 52px;
@@ -742,7 +617,7 @@
 
       /* ---------- Toast ---------- */
       #toast {
-        /* short message above the bottom bar; taps pass through it */
+        /* short message above the tab bar; taps pass through it */
         position: fixed;
         left: 50%;
         bottom: calc(76px + env(safe-area-inset-bottom, 0px));
@@ -988,30 +863,16 @@
         .bar i {
           transition: width 0.1s linear;
         }
-        #menu {
+        #tn {
           transition:
-            transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1),
-            visibility 0s 0.3s;
+            opacity 0.2s,
+            transform 0.2s,
+            visibility 0s 0.2s;
         }
-        html.menu-open #menu {
-          transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
-        }
-        #scrim {
+        #tn.show {
           transition:
-            opacity 0.25s,
-            visibility 0s 0.25s;
-        }
-        html.menu-open #scrim {
-          transition: opacity 0.25s;
-        }
-        #hereName.slide {
-          animation: here 0.3s ease-out;
-        } /* the tab name slides in from the way you moved */
-        @keyframes here {
-          from {
-            opacity: 0;
-            transform: translateX(var(--from, 0));
-          }
+            opacity 0.2s,
+            transform 0.2s;
         }
         #title {
           transition: opacity 0.5s;
@@ -1108,8 +969,7 @@
       .low #bhv .pulse {
         filter: none;
       }
-      .low #bar,
-      .low #scrim {
+      .low #nav {
         -webkit-backdrop-filter: none;
         backdrop-filter: none;
         background: var(--bg);
@@ -1201,45 +1061,35 @@
       <div id="pane"></div>
       <div id="pane2"></div>
       <div id="setb" hidden>
-        <div id="setrows"></div>
-        <div class="row">
-          <div><b>Theme color</b><small>Changes the accent color across the game.</small></div>
-          <input type="color" id="cp" aria-label="Theme color" />
-        </div>
-        <div class="row">
-          <div>
-            <b>Back up your save</b
-            ><small>Export makes a save code you can keep or move to another device. Import loads one.</small>
+        <details id="setd" class="fold" data-fold="settings">
+          <summary data-a="fold" data-i="settings">Settings</summary>
+          <div id="setrows"></div>
+          <div class="row">
+            <div><b>Theme color</b><small>Changes the accent color across the game.</small></div>
+            <input type="color" id="cp" aria-label="Theme color" />
           </div>
-          <span class="bp"
-            ><button data-a="exportSave" data-i="0">Export</button
-            ><button data-a="importSave" data-i="0">Import</button></span
-          >
-        </div>
-        <textarea id="sv" hidden rows="3"></textarea>
-        <div class="row">
-          <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
-          <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
-        </div>
-        <small class="bld">Build 15</small>
+          <div class="row">
+            <div>
+              <b>Back up your save</b
+              ><small>Export makes a save code you can keep or move to another device. Import loads one.</small>
+            </div>
+            <span class="bp"
+              ><button data-a="exportSave" data-i="0">Export</button
+              ><button data-a="importSave" data-i="0">Import</button></span
+            >
+          </div>
+          <textarea id="sv" hidden rows="3"></textarea>
+          <div class="row">
+            <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
+            <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
+          </div>
+          <small class="bld">Build 16</small>
+        </details>
       </div>
     </main>
     <div id="tut" hidden><div class="tc" id="tutc"></div></div>
-    <nav id="bar">
-      <button id="menuBtn" data-a="menu" data-i="toggle" aria-label="Menu"></button>
-      <div id="here" data-a="menu" data-i="open">
-        <div id="hereName"></div>
-        <div id="dots"></div>
-      </div>
-      <span></span>
-    </nav>
-    <div id="scrim" data-a="menu" data-i="close"></div>
-    <aside id="menu" aria-label="Menu">
-      <div class="mhead">
-        <b>Space Capitalism</b><button class="mclose" data-a="menu" data-i="close" aria-label="Close menu"></button>
-      </div>
-      <div id="mlist"></div>
-    </aside>
+    <div id="nav"></div>
+    <div id="tn"></div>
     <div id="end" hidden>
       <div class="tw">
         <div id="endi"></div>
@@ -1293,9 +1143,6 @@
 
       // Icons: hand-drawn 24×24 outline SVGs
       const ICON_PATHS = {
-        menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
-        close: '<path d="M18 6 6 18M6 6l12 12"/>',
-        gear: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
         pulsar: '<circle cx="12" cy="12" r="3"/><path d="M4 4l5 5M15 15l5 5M3 12h2M19 12h2"/>',
         magnet: '<path d="M6 3v8a6 6 0 0 0 12 0V3h-4v8a2 2 0 0 1-4 0V3z"/><path d="M6 7h4M14 7h4"/>',
         quasar: '<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="9" ry="2.5"/><path d="M12 2v5M12 17v5"/>',
@@ -1763,7 +1610,7 @@
         done: () => S.wonAt > 0,
       });
 
-      // ===== Tabs (in menu order; swiping moves through them in this order) =====
+      // ===== Tabs (in tab-bar order; swiping moves through them in this order) =====
       const TABS = [
         { key: "fleet", name: "Fleet", icon: "rocket", color: "#ffb020" },
         { key: "crew", name: "Crew", icon: "crew", color: "#ff8a5b" },
@@ -1773,7 +1620,6 @@
         { key: "warp", name: "Warp", icon: "hole", color: "#c58bff" },
         { key: "blackhole", name: "Black Hole", icon: "vortex", color: "#ff9d5c" },
         { key: "stats", name: "Stats", icon: "chart", color: "#7ee0ff" },
-        { key: "settings", name: "Settings", icon: "gear", color: "#cbd5e1" },
       ];
       const tabIndex = (key) => TABS.findIndex((t) => t.key === key);
       const BUY_MODES = [1, 10, 100, "max", "next"];
@@ -2114,11 +1960,7 @@
       }
       const ACTIONS = {
         mode: (v) => (buyMode = isNaN(+v) ? v : +v),
-        tab(v) {
-          setMenu(false);
-          goToTab(v);
-        },
-        menu: (v) => setMenu(v === "toggle" ? !menuOpen : v === "open"),
+        tab: (v) => goToTab(v),
         run(v) {
           S.taps++;
           if (level(+v) && !S.running[+v]) S.running[+v] = 1;
@@ -2313,7 +2155,7 @@
       function act(action, arg) {
         if (!ACTIONS[action]) return;
         ACTIONS[action](arg);
-        if (action === "tab" || action === "menu") return; // these render themselves
+        if (action === "tab") return; // goToTab renders
         refresh();
         render(true);
       }
@@ -2360,33 +2202,6 @@
       document.addEventListener("touchmove", (e) => swipe && swipe.dragging && e.preventDefault(), { passive: false });
       document.addEventListener("gesturestart", (e) => e.preventDefault());
 
-      // ===== Side menu =====
-      // Opens from the menu button, by tapping the tab name, or by swiping right on the first tab. Closes from a tap
-      // outside it, the close button, a swipe left, or Escape
-      const menuEl = $("menu"),
-        scrimEl = $("scrim");
-      let menuOpen = false;
-      function setMenu(open) {
-        menuOpen = open;
-        for (const el of [menuEl, scrimEl])
-          el.style.transform = el.style.opacity = el.style.visibility = el.style.transition = "";
-        document.documentElement.classList.toggle("menu-open", open);
-        if (open) renderMenu(tabBadges());
-      }
-      // Follow the finger while the menu is dragged open or closed. x is the menu's offset from fully open (0 or less)
-      function dragMenu(x) {
-        const w = menuEl.offsetWidth;
-        x = Math.max(-w, Math.min(0, x));
-        for (const el of [menuEl, scrimEl]) {
-          el.style.transition = "none";
-          el.style.visibility = "visible";
-        }
-        menuEl.style.transform = `translateX(${x}px)`;
-        scrimEl.style.opacity = String(1 + x / w);
-        return x;
-      }
-      addEventListener("keydown", (e) => e.key === "Escape" && menuOpen && setMenu(false));
-
       // ===== Swipe between tabs =====
       // A sideways drag anywhere below the top banner moves the page with your finger. Let go past a quarter of the
       // screen (or flick) and the next tab slides in; otherwise the page springs back.
@@ -2396,16 +2211,13 @@
       function swipeStart(e) {
         swipe = null;
         if (!started || !e.isPrimary || (e.pointerType === "mouse" && e.button !== 0)) return;
-        if (!$("tut").hidden || !$("end").hidden || e.target.closest("input, textarea")) return;
-        if (!menuOpen && e.target.closest("#top")) return;
-        // mode: 'tabs' moves between tabs, 'open' drags the menu open, 'close' drags it shut
+        if (!$("tut").hidden || !$("end").hidden || e.target.closest("#top, input, textarea")) return;
         swipe = {
           id: e.pointerId,
           x0: e.clientX,
           y0: e.clientY,
           dx: 0,
           dragging: false,
-          mode: menuOpen ? "close" : "tabs",
           trail: [[e.clientX, e.timeStamp]],
         };
       }
@@ -2418,22 +2230,14 @@
           if (Math.abs(dx) < Math.abs(dy) * 1.2) return void (swipe = null); // a vertical scroll
           swipe.dragging = true;
           tapStart = null; // a swipe is never a tap
-          if (swipe.mode === "tabs" && dx > 0 && tabIndex(tab) === 0) swipe.mode = "open"; // swiping right on the first tab opens the menu
-          if (swipe.mode === "tabs") {
-            clearTabTimers();
-            view.style.transition = "none";
-          }
-        }
-        swipe.trail.push([e.clientX, e.timeStamp]);
-        if (swipe.trail.length > 6) swipe.trail.shift();
-        if (swipe.mode !== "tabs") {
-          swipe.dx = dx;
-          swipe.menuX = dragMenu(swipe.mode === "open" ? dx - menuEl.offsetWidth : dx);
-          return;
+          clearTabTimers();
+          view.style.transition = "none";
         }
         const i = tabIndex(tab),
           atEdge = (dx > 0 && i === 0) || (dx < 0 && i === TABS.length - 1);
-        swipe.dx = atEdge ? dx * 0.25 : dx; // resist past the last tab
+        swipe.dx = atEdge ? dx * 0.25 : dx; // resist past the first and last tab
+        swipe.trail.push([e.clientX, e.timeStamp]);
+        if (swipe.trail.length > 6) swipe.trail.shift();
         view.style.transform = `translateX(${swipe.dx}px)`;
         view.style.opacity = 1 - Math.min(0.6, (Math.abs(swipe.dx) / innerWidth) * 0.9);
         Starfield.drag(swipe.dx);
@@ -2447,10 +2251,6 @@
         const [x1, t1] = s.trail[0],
           [x2, t2] = s.trail[s.trail.length - 1];
         const v = (x2 - x1) / Math.max(1, t2 - t1); // px per ms over the last few moves
-        if (s.mode !== "tabs") {
-          const flick = Math.abs(v) > 0.35 && Math.abs(s.dx) > 24;
-          return setMenu(cancelled ? menuOpen : flick ? v > 0 : s.menuX > -menuEl.offsetWidth / 2);
-        }
         const to = tabIndex(tab) + (s.dx < 0 ? 1 : -1);
         const far = Math.abs(s.dx) > innerWidth * 0.25,
           flick = Math.abs(v) > 0.35 && Math.abs(s.dx) > 24 && Math.sign(v) === Math.sign(s.dx);
@@ -2465,7 +2265,7 @@
         tabTimers.forEach(clearTimeout);
         tabTimers = [];
       }
-      // Switch tabs. From a swipe, the page keeps moving the way the finger went; from the menu it slides in from that side
+      // Switch tabs. From a swipe, the page keeps moving the way the finger went; from the tab bar it slides in from that side
       function goToTab(key, swipedBy) {
         const from = tabIndex(tab),
           to = tabIndex(key);
@@ -2477,7 +2277,7 @@
         }
         const dir = to > from ? 1 : -1,
           w = innerWidth;
-        showTabName(key, dir);
+        showTabName(key);
         Starfield.rush(-dir, TABS[to].color);
         const enter = (offset) => {
           setTab(key);
@@ -2502,18 +2302,15 @@
         view.scrollTop = 0;
         render(true);
       }
-      // The current tab's name sits in the bottom bar (with a dot for each tab), so the top banner is never covered
-      function showTabName(key, dir = 0) {
+      let tabNameTimer;
+      function showTabName(key) {
         const t = TABS[tabIndex(key)],
-          name = $("hereName");
-        $("here").style.setProperty("--k", t.color);
-        name.innerHTML = icon(t.icon, 22) + "<span>" + t.name + "</span>";
-        $("dots").innerHTML = TABS.map((x) => `<i class="${x.key === key ? "on" : ""}"></i>`).join("");
-        if (!dir) return;
-        name.classList.remove("slide");
-        name.style.setProperty("--from", dir * 28 + "px");
-        void name.offsetWidth;
-        name.classList.add("slide");
+          e = $("tn");
+        e.innerHTML = icon(t.icon, 18) + "<span>" + t.name + "</span>";
+        e.style.color = t.color;
+        e.classList.add("show");
+        clearTimeout(tabNameTimer);
+        tabNameTimer = setTimeout(() => e.classList.remove("show"), 1000);
       }
 
       // ===== Feedback: floating numbers, milestone flash, toasts =====
@@ -2551,7 +2348,7 @@
       const TUTORIAL = [
         [
           "Welcome to Space Capitalism",
-          "<p>Build a space empire that keeps earning even while you're away. Start with a single Solar Array and grow until you can reach the black hole at the edge of the galaxy.</p><p>Open the <b>menu</b> with the button at the bottom left to jump to any tab, or swipe left and right anywhere below the top boxes. A red dot on the menu button means something is ready.</p><p>This guide takes a minute. You can reopen it any time from <b>Settings</b> in the menu.</p>",
+          "<p>Build a space empire that keeps earning even while you're away. Start with a single Solar Array and grow until you can reach the black hole at the edge of the galaxy.</p><p>Move between tabs with the bar at the bottom, or swipe left and right anywhere below the top boxes.</p><p>This guide takes a minute. You can reopen it any time from <b>Settings</b> on the Stats tab.</p>",
         ],
         [
           "Fleets",
@@ -2563,11 +2360,11 @@
         ],
         [
           "Research and missions",
-          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. A red dot next to Missions in the menu means one is ready. <b>Achievements</b> on the Stats tab add +1% profit each.</p>",
+          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. A red dot on the Missions tab means one is ready. <b>Achievements</b> on the Stats tab add +1% profit each.</p>",
         ],
         [
           "Warp and Dark Matter",
-          "<p>Once you've earned enough credits in total (about ₵2B for the first one), <b>Warp</b> resets your fleets, crew, upgrades and credits, and gives you <b>Dark Matter</b>. You keep Science, research, missions and achievements.</p><p>Every Dark Matter gives <b>+2% profit</b> (the bonus grows more slowly past 1,000), so you rebuild much faster each time. You can spend Dark Matter on powerful upgrades, but spending it lowers the bonus.</p><p>The Warp tab tells you how much a warp would multiply your Dark Matter. A red dot next to Warp in the menu means now is a good time, usually around ×2.</p>",
+          "<p>Once you've earned enough credits in total (about ₵2B for the first one), <b>Warp</b> resets your fleets, crew, upgrades and credits, and gives you <b>Dark Matter</b>. You keep Science, research, missions and achievements.</p><p>Every Dark Matter gives <b>+2% profit</b> (the bonus grows more slowly past 1,000), so you rebuild much faster each time. You can spend Dark Matter on powerful upgrades, but spending it lowers the bonus.</p><p>The Warp tab tells you how much a warp would multiply your Dark Matter. A red dot on its icon means now is a good time, usually around ×2.</p>",
         ],
         [
           "Ascension and Quasar Cores",
@@ -2579,7 +2376,7 @@
         ],
         [
           "Tips",
-          "<p>On the <b>Stats</b> tab: the <b>daily bonus</b> pays six hours of income, and the <b>power boost</b> triples your profit for 30 minutes, getting stronger with each Ascension. A red dot next to Stats in the menu shows when one is ready.</p><p>Your game saves automatically. Use <b>Export</b> in Settings now and then to keep a backup code.</p>",
+          "<p>On the <b>Stats</b> tab: the <b>daily bonus</b> pays six hours of income, and the <b>power boost</b> triples your profit for 30 minutes, getting stronger with each Ascension. A red dot shows when one is ready.</p><p>Your game saves automatically. Use <b>Export</b> in Settings now and then to keep a backup code.</p>",
         ],
       ];
       let tutorialPage = 0;
@@ -2629,15 +2426,10 @@
 
       const cards = []; // fleet card elements by unit index
       function build() {
-        $("menuBtn").innerHTML = icon("menu", 24);
-        menuEl.querySelector(".mclose").innerHTML = icon("close", 20);
-        $("mlist").innerHTML = TABS.map(
+        $("nav").innerHTML = TABS.map(
           (t) =>
-            (t.key === "settings" ? '<div class="msep"></div>' : "") +
-            `<button class="mitem" id="menu-${t.key}" data-a="tab" data-i="${t.key}" style="--k:${t.color}"><span class="mi">${icon(t.icon, 22)}</span>` +
-            `<span><b>${t.name}</b><small id="menu-sub-${t.key}"></small></span></button>`,
+            `<button data-a="tab" data-i="${t.key}" id="nav-${t.key}" aria-label="${t.name}" style="--k:${t.color}">${icon(t.icon, 22)}</button>`,
         ).join("");
-        showTabName(tab);
         $("modes").innerHTML = BUY_MODES.map(
           (m) =>
             `<button data-a="mode" data-i="${m}" id="mode-${m}">${m === "max" ? "Max" : m === "next" ? "Next ×2" : "×" + m}</button>`,
@@ -2675,74 +2467,21 @@
         setText($("hdIncome"), money(M.crewIncome + manualRate));
         setText($("hdSci"), count(S.science));
         setText($("hdDM"), count(dmAvailable()));
-        const badges = tabBadges(now);
-        $("menuBtn").classList.toggle("badge", Object.values(badges).some(Boolean));
-        if (menuOpen) renderMenu(badges);
+        for (const t of TABS) {
+          const b = $("nav-" + t.key);
+          b.classList.toggle("on", t.key === tab);
+          const badge =
+            t.key === "warp"
+              ? goodWarp() || goodAscend()
+              : t.key === "stats"
+                ? now >= S.dailyReadyAt || now >= S.boostReadyAt
+                : t.key === "missions"
+                  ? MISSIONS.some((m) => !S.missions[m.id] && m.done())
+                  : false;
+          b.classList.toggle("badge", badge);
+        }
         BUY_MODES.forEach((m) => $("mode-" + m).classList.toggle("on", m === buyMode));
         setText($("wipeb"), armed === "delete" ? "Tap again" : "Delete");
-      }
-
-      // Red dots: something worth doing on that tab
-      const tabBadges = (now = Date.now()) => ({
-        warp: goodWarp() || goodAscend(),
-        missions: MISSIONS.some((m) => !S.missions[m.id] && m.done()),
-        stats: now >= S.dailyReadyAt || now >= S.boostReadyAt,
-      });
-      // A one-line status under each menu entry
-      const plural = (n, one, many) => `${count(n)} ${n === 1 ? one : many}`;
-      const MENU_STATUS = {
-        fleet: () => `${S.level.slice(0, FLEET_COUNT).filter((l) => l > 0).length} of ${FLEET_COUNT} fleets built`,
-        crew() {
-          const n = DISPLAY_ORDER.filter((i) => level(i) && !S.crew[i] && S.cash >= crewCost(i)).length;
-          return n
-            ? plural(n, "crew", "crew") + " ready to hire"
-            : `${crewCount(UNITS.length)} of ${UNITS.length} hired`;
-        },
-        upgrades() {
-          const n = DISPLAY_ORDER.filter(
-            (i) => i !== LAB && level(i) && S.upgrades[i] < 10 && S.cash >= upgradeCost(i),
-          ).length;
-          return n
-            ? plural(n, "fleet", "fleets") + " can upgrade"
-            : `${upgradesBought()} of ${FLEET_COUNT * 10} bought`;
-        },
-        research() {
-          const n = RESEARCH.filter((r) => !S.research[r.id] && S.science >= r.cost).length;
-          return n ? plural(n, "tech", "techs") + " affordable" : `${researchDone()} of ${RESEARCH.length} complete`;
-        },
-        missions() {
-          const n = MISSIONS.filter((m) => !S.missions[m.id] && m.done()).length;
-          return n
-            ? plural(n, "mission", "missions") + " ready to claim"
-            : `${Object.keys(S.missions).length} of ${MISSIONS.length} claimed`;
-        },
-        warp: () =>
-          goodWarp()
-            ? "Good time to warp"
-            : goodAscend()
-              ? "Good time to ascend"
-              : `${count(dmAvailable())} Dark Matter · ${count(coresAvailable())} cores`,
-        blackhole: () =>
-          S.wonAt
-            ? "Event horizon crossed"
-            : level(GATE) || S.charge
-              ? `Gate ${(chargeFraction() * 100).toFixed(1)}% charged`
-              : "The end goal",
-        stats() {
-          const now = Date.now();
-          if (now >= S.dailyReadyAt) return "Daily bonus ready";
-          if (now >= S.boostReadyAt) return "Power boost ready";
-          return `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} achievements`;
-        },
-        settings: () => "Theme, backup and more",
-      };
-      function renderMenu(badges) {
-        for (const t of TABS) {
-          const item = $("menu-" + t.key);
-          item.classList.toggle("on", t.key === tab);
-          item.classList.toggle("badge", !!badges[t.key]);
-          setText($("menu-sub-" + t.key), MENU_STATUS[t.key]());
-        }
       }
 
       function allMilestoneLine() {
@@ -2960,7 +2699,6 @@
           ).join("");
           return [h];
         },
-        settings: () => [tip("Settings are saved with your game and included in exported save codes.")],
         stats() {
           const now = Date.now();
           const claim = (readyAt, action, label) =>
@@ -3046,7 +2784,7 @@
         const [main, extra = ""] = PANES[tab]();
         setHTML($("pane"), main);
         setHTML($("pane2"), extra);
-        if (tab === "settings") setHTML($("setrows"), settingsRows());
+        if (tab === "stats") setHTML($("setrows"), settingsRows());
       }
       // Full render: after actions and tab changes. The main loop renders the fleet every tick and other panes every third tick
       let shownTab = "";
@@ -3058,8 +2796,7 @@
             color = TABS[tabIndex(tab)].color;
           $("modes").hidden = $("allms").hidden = $("fleet").hidden = !onFleet;
           $("bhv").hidden = tab !== "blackhole";
-          $("setb").hidden = tab !== "settings";
-          $("setb").style.setProperty("--tabc", color);
+          $("setb").hidden = tab !== "stats";
           $("pane").style.setProperty("--tabc", color);
           $("pane2").style.setProperty("--tabc", color);
           if (onFleet) (setHTML($("pane"), ""), setHTML($("pane2"), ""));

@@ -20,15 +20,15 @@ It's inspired by *AdVenture Capitalist* and *AdVenture Communist*, merged into o
 - **Quality of life:** "buy all" and "hire all" buttons, a "Next ×2" buy mode, hints that tell you when to warp or ascend, red dots when missions or bonuses are ready, and number names up to Centillion (10³⁰³).
 - **Offline earnings,** so your fleets keep working while you're away. A power boost only counts for the time it had left.
 - **An 8-page tutorial** that explains every system, and can be reopened any time.
-- **Phone-first design:** swipe left or right anywhere below the top boxes to change tabs (stars streak past as you go), or open the side menu from the button at the bottom left. The menu shows a short status for every tab, like how many missions are ready to claim, and the top stats are never covered. The page only scrolls up and down. There's also a theme color picker, a low-effects mode and full-screen home screen support.
+- **Phone-first design:** swipe left or right anywhere below the top boxes to change tabs (stars streak past as you go), or use the bottom tab bar. The page only scrolls up and down. There's also a theme color picker, a low-effects mode and full-screen home screen support.
 
 ## How to play
 
-1. Tap anywhere on the title screen, then tap **Build** on the Solar Array. Tap the fleet's card to run it and earn credits. Swipe left or right to move between tabs, or tap the menu button at the bottom left.
+1. Tap anywhere on the title screen, then tap **Build** on the Solar Array. Tap the fleet's card to run it and earn credits. Swipe left or right to move between tabs.
 2. Buy more fleets and levels. Every 25, 50, 100 and so on levels doubles a fleet's speed.
 3. Hire **crew** so fleets run on their own, even while you're offline.
 4. Spend credits on **upgrades** and Science on **research**. Claim **missions** for Science and bonus profit.
-5. When the menu shows a red dot next to Warp, **warp** for Dark Matter. Later, **ascend** for Quasar Cores.
+5. When the Warp tab shows a red dot, **warp** for Dark Matter. Later, **ascend** for Quasar Cores.
 6. Build the **Singularity Gate**, charge it in the **Black Hole** tab, and cross the event horizon to finish.
 
 ## Add it to your iPhone home screen
@@ -41,7 +41,7 @@ It's inspired by *AdVenture Capitalist* and *AdVenture Communist*, merged into o
 
 Progress saves automatically in your browser every few seconds. Saves are tied to the browser and address you play in, so clearing Safari's website data deletes your save.
 
-To back up or move your progress, open the menu and tap **Settings**:
+To back up or move your progress, open the **Stats** tab, scroll to the bottom and tap **Settings**:
 
 - **Export** gives you a save code, including your theme color. Keep it somewhere safe.
 - **Import** loads a save code, for example on another device.
@@ -57,4 +57,4 @@ To run it locally, download `index.html` and open it in any modern browser.
 
 ## Version
 
-Current build: **Build 15**.
+Current build: **Build 16**.
