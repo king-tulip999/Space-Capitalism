@@ -31,8 +31,6 @@
         --acc: #ff3dd8;
         --gold: #ffc65a;
         --ok: #3de68f;
-        padding-top: env(safe-area-inset-top, 0px);
-        padding-bottom: env(safe-area-inset-bottom, 0px);
       }
       @media (prefers-color-scheme: dark) {
         :root:not([data-theme="light"]) {
@@ -60,12 +58,18 @@
           radial-gradient(ellipse at 90% 88%, hsl(calc(var(--h) + 150) 60% 15% / 0.8), transparent 48%) fixed,
           var(--bg);
       }
+      html,
       body {
-        min-height: 100vh;
-        min-height: 100lvh;
+        overflow: hidden;
+      } /* the page itself never scrolls; only the area below the top banner does */
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        height: 100dvh;
         max-width: 640px;
         margin: auto;
-        padding: 0 10px calc(100px + env(safe-area-inset-bottom, 0px));
+        padding: 0 10px;
         background: transparent;
         color: var(--tx);
         font:
@@ -104,24 +108,12 @@
 
       /* ---------- Top stats ---------- */
       #top {
-        position: sticky;
-        top: 0;
+        /* fixed above the scrolling area, so nothing ever passes behind it */
+        position: relative;
         z-index: 5;
-        margin: calc(-1 * env(safe-area-inset-top, 0px)) -10px 8px;
-        padding: calc(env(safe-area-inset-top, 0px) + 20px) 10px 6px;
-      }
-      #top::before {
-        /* blurred backdrop behind the stat boxes only; it softens in its last few pixels instead of ending in a hard line */
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        background: color-mix(in srgb, var(--bg) 40%, transparent);
-        -webkit-backdrop-filter: blur(24px) saturate(1.5);
-        backdrop-filter: blur(24px) saturate(1.5);
-        -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 8px), transparent);
-        mask-image: linear-gradient(to bottom, #000 calc(100% - 8px), transparent);
+        flex: none;
+        margin: 0 -10px;
+        padding: calc(env(safe-area-inset-top, 0px) + 20px) 10px 4px;
       }
       #hdw {
         position: relative;
@@ -410,8 +402,18 @@
 
       /* ---------- Cards and rows ---------- */
       #view {
+        /* everything below the top banner: scrolls on its own and slides sideways when tabs change */
         position: relative;
-      } /* everything below the top banner; slides sideways when tabs change */
+        flex: 1;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        margin: 0 -10px;
+        padding: 10px 10px calc(100px + env(safe-area-inset-bottom, 0px));
+        -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10px);
+        mask-image: linear-gradient(to bottom, transparent, #000 10px); /* cards soften as they scroll out of sight */
+      }
       #fleet {
         display: flex;
         flex-direction: column;
@@ -1106,7 +1108,6 @@
       .low #bhv .pulse {
         filter: none;
       }
-      .low #top::before,
       .low #bar,
       .low #scrim {
         -webkit-backdrop-filter: none;
@@ -1220,7 +1221,7 @@
           <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
           <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
         </div>
-        <small class="bld">Build 14</small>
+        <small class="bld">Build 15</small>
       </div>
     </main>
     <div id="tut" hidden><div class="tc" id="tutc"></div></div>
@@ -2471,7 +2472,7 @@
         if (to < 0) return;
         clearTabTimers();
         if (to === from) {
-          scrollTo(0, 0);
+          view.scrollTop = 0;
           return;
         }
         const dir = to > from ? 1 : -1,
@@ -2498,8 +2499,7 @@
       }
       function setTab(key) {
         tab = key;
-        scrollTo(0, 0);
-        document.documentElement.scrollTop = document.body.scrollTop = 0;
+        view.scrollTop = 0;
         render(true);
       }
       // The current tab's name sits in the bottom bar (with a dot for each tab), so the top banner is never covered
