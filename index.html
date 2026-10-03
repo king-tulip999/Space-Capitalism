@@ -1084,7 +1084,7 @@
       <p id="allms" class="allms"></p>
       <div id="fleet"></div>
       <div id="bhv" hidden>
-        <svg viewBox="0 0 300 300" width="290" height="290" aria-hidden="true">
+        <svg viewBox="0 0 300 300" width="300" height="300" aria-hidden="true">
           <defs>
             <filter id="liq" x="-20%" y="-20%" width="140%" height="140%">
               <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="2" seed="4" result="n">
@@ -1098,38 +1098,140 @@
               <feDisplacementMap in="SourceGraphic" in2="n" scale="22" xChannelSelector="R" yChannelSelector="G" />
               <feGaussianBlur stdDeviation="2.5" />
             </filter>
+            <filter id="flow" x="-10%" y="-60%" width="120%" height="220%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.035 0.16" numOctaves="2" seed="9" result="n">
+                <animate
+                  attributeName="baseFrequency"
+                  dur="9s"
+                  values="0.035 0.16;0.05 0.12;0.035 0.16"
+                  repeatCount="indefinite"
+                />
+              </feTurbulence>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" />
+              <feGaussianBlur stdDeviation="1.3" />
+            </filter>
             <filter id="bsoft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" /></filter>
+            <filter id="lensf" x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="2" result="n">
+                <animate attributeName="baseFrequency" dur="11s" values="0.06;0.085;0.06" repeatCount="indefinite" />
+              </feTurbulence>
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="n"
+                scale="6"
+                xChannelSelector="R"
+                yChannelSelector="G"
+                result="d"
+              />
+              <feGaussianBlur in="d" stdDeviation="2.2" />
+            </filter>
             <radialGradient id="bhalo">
               <stop offset="30%" stop-color="#fff6e0" stop-opacity="0" />
               <stop offset="35%" stop-color="#fff3d1" />
-              <stop offset="42%" stop-color="#ffc061" stop-opacity=".95" />
-              <stop offset="56%" stop-color="#ff7a2e" stop-opacity=".55" />
-              <stop offset="74%" stop-color="#b8325a" stop-opacity=".2" />
+              <stop offset="42%" stop-color="#ffc061" stop-opacity=".9" />
+              <stop offset="56%" stop-color="#ff7a2e" stop-opacity=".5" />
+              <stop offset="74%" stop-color="#b8325a" stop-opacity=".18" />
               <stop offset="100%" stop-color="#3a0a2e" stop-opacity="0" />
             </radialGradient>
+            <linearGradient id="lens" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff6dc" />
+              <stop offset=".22" stop-color="#ffc061" stop-opacity=".9" />
+              <stop offset=".5" stop-color="#ff8a3a" stop-opacity=".15" />
+              <stop offset=".78" stop-color="#ffb44f" stop-opacity=".7" />
+              <stop offset="1" stop-color="#ffe7b0" />
+            </linearGradient>
             <linearGradient id="bdisk" x1="0" x2="1">
               <stop offset="0" stop-color="#ff6a2a" stop-opacity="0" />
-              <stop offset=".18" stop-color="#ffb44f" stop-opacity=".85" />
-              <stop offset=".5" stop-color="#fffaf0" />
-              <stop offset=".82" stop-color="#ffb44f" stop-opacity=".85" />
+              <stop offset=".15" stop-color="#ffc77a" stop-opacity=".95" />
+              <stop offset=".42" stop-color="#fffaf0" />
+              <stop offset=".7" stop-color="#ffb44f" stop-opacity=".8" />
               <stop offset="1" stop-color="#ff6a2a" stop-opacity="0" />
             </linearGradient>
+            <clipPath id="front"><rect x="0" y="150" width="300" height="16" /></clipPath>
+            <ellipse
+              id="diskglow"
+              cx="150"
+              cy="150"
+              rx="146"
+              ry="11"
+              fill="url(#bdisk)"
+              filter="url(#bsoft)"
+              opacity=".85"
+            />
+            <g id="disk">
+              <g filter="url(#flow)" fill="none" stroke-linecap="round">
+                <ellipse
+                  cx="150"
+                  cy="150"
+                  rx="140"
+                  ry="9"
+                  stroke="#ffe2b0"
+                  stroke-width="1.6"
+                  stroke-dasharray="70 20 40 34"
+                  opacity=".55"
+                >
+                  <animate attributeName="stroke-dashoffset" from="0" to="-328" dur="5s" repeatCount="indefinite" />
+                </ellipse>
+                <ellipse
+                  cx="150"
+                  cy="150"
+                  rx="118"
+                  ry="7"
+                  stroke="#ffb867"
+                  stroke-width="2.2"
+                  stroke-dasharray="80 26 34 20"
+                  opacity=".6"
+                >
+                  <animate attributeName="stroke-dashoffset" from="0" to="-300" dur="3.6s" repeatCount="indefinite" />
+                </ellipse>
+                <ellipse
+                  cx="150"
+                  cy="150"
+                  rx="96"
+                  ry="5"
+                  stroke="#fff3d6"
+                  stroke-width="1.4"
+                  stroke-dasharray="54 18 40 11"
+                  opacity=".7"
+                >
+                  <animate attributeName="stroke-dashoffset" from="0" to="-246" dur="2.6s" repeatCount="indefinite" />
+                </ellipse>
+                <ellipse
+                  cx="150"
+                  cy="150"
+                  rx="74"
+                  ry="3.6"
+                  stroke="#ff9a4a"
+                  stroke-width="2"
+                  stroke-dasharray="48 15"
+                  opacity=".55"
+                >
+                  <animate attributeName="stroke-dashoffset" from="0" to="-190" dur="1.9s" repeatCount="indefinite" />
+                </ellipse>
+              </g>
+              <ellipse cx="150" cy="150" rx="132" ry="2.2" fill="url(#bdisk)" />
+            </g>
           </defs>
-          <g class="pulse" filter="url(#liq)"><circle cx="150" cy="150" r="142" fill="url(#bhalo)" /></g>
-          <circle
-            class="ring2"
-            cx="150"
-            cy="150"
-            r="58"
-            fill="none"
-            stroke="#ffcf7a"
-            stroke-width="12"
-            filter="url(#bsoft)"
-          />
-          <circle cx="150" cy="150" r="50" fill="#000" />
-          <circle class="ring1" cx="150" cy="150" r="51.5" fill="none" stroke="#fff4d6" stroke-width="2" />
-          <ellipse cx="150" cy="150" rx="146" ry="10" fill="url(#bdisk)" filter="url(#bsoft)" opacity=".9" />
-          <ellipse cx="150" cy="150" rx="132" ry="2.4" fill="url(#bdisk)" />
+          <g transform="rotate(-8 150 150)">
+            <g class="pulse" filter="url(#liq)"><circle cx="150" cy="150" r="142" fill="url(#bhalo)" /></g>
+            <ellipse
+              class="ring2"
+              cx="150"
+              cy="150"
+              rx="70"
+              ry="66"
+              fill="none"
+              stroke="url(#lens)"
+              stroke-width="15"
+              filter="url(#lensf)"
+            />
+            <use href="#diskglow" />
+            <use href="#disk" />
+            <circle cx="150" cy="150" r="50" fill="#000" />
+            <circle cx="150" cy="150" r="51.6" fill="none" stroke="#fff4d6" stroke-width="1.8" opacity=".95" />
+            <use href="#disk" clip-path="url(#front)" />
+            <ellipse cx="150" cy="150" rx="146" ry="7" fill="url(#bdisk)" opacity=".35" clip-path="url(#front)" />
+          </g>
         </svg>
       </div>
       <div id="pane"></div>
@@ -1157,7 +1259,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 18</small>
+          <small class="bld">Build 19</small>
         </details>
       </div>
     </main>
@@ -2832,7 +2934,9 @@
           const achRow = (a, got) => row(a.name, a.desc, got ? owned("+1%") : "", got ? "" : " done");
           const achievements =
             section(`Achievements ${earned.length} / ${ACHIEVEMENTS.length} · +${earned.length}% profit`) +
-            earned.map((a) => achRow(a, true)).join("") +
+            (earned.length
+              ? fold("earned", `Show unlocked (${earned.length})`, earned.map((a) => achRow(a, true)).join(""))
+              : "") +
             (locked.length
               ? fold("locked", `Show locked (${locked.length})`, locked.map((a) => achRow(a, false)).join(""))
               : "");
