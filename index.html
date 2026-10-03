@@ -155,7 +155,7 @@
         /* tab name: a small pill just above the tab bar for a moment after switching, so the top banner is never covered */
         position: fixed;
         left: 50%;
-        bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px) + var(--lift, 0px));
         z-index: 8;
         display: flex;
         align-items: center;
@@ -178,7 +178,7 @@
         transform: translate(-50%, 0);
       }
       #tn.show ~ #toast {
-        bottom: calc(122px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(122px + env(safe-area-inset-bottom, 0px) + var(--lift, 0px));
       } /* a message steps up while the tab name shows */
 
       /* ---------- Bottom tab bar ---------- */
@@ -193,7 +193,7 @@
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 6px;
-        padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 6px);
+        padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 6px + var(--lift, 0px)); /* --lift raises the buttons within thumb reach */
         background: color-mix(in srgb, var(--bg) 60%, transparent);
         -webkit-backdrop-filter: blur(14px);
         backdrop-filter: blur(14px);
@@ -629,7 +629,7 @@
         /* short message above the tab bar; taps pass through it */
         position: fixed;
         left: 50%;
-        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px) + var(--lift, 0px));
         z-index: 9;
         width: max-content;
         max-width: calc(100% - 32px);
@@ -1084,7 +1084,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 26</small>
+          <small class="bld">Build 27</small>
         </details>
       </div>
     </main>
@@ -3588,7 +3588,14 @@
       (() => {
         const nav = $("nav");
         let last = -1;
+        const app = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+        let lift = -1;
         function fitEnd() {
+          // Tab bar sits about 60 points up from the bottom of the screen, easier to reach. When iOS opens the app
+          // short it is already partway up, so only the difference is added; it lands in the same place either way.
+          const short = innerWidth < innerHeight ? Math.max(0, screen.height - innerHeight) : 0;
+          const l = app ? Math.max(0, 60 - short) : 0;
+          if (l !== lift) document.documentElement.style.setProperty("--lift", (lift = l) + "px");
           const vv = window.visualViewport;
           const seen = Math.min(
             nav.getBoundingClientRect().top,
@@ -3599,6 +3606,7 @@
           if (room !== last) view.style.setProperty("--end", (last = room) + "px");
         }
         fitEnd();
+        requestAnimationFrame(fitEnd);
         addEventListener("resize", fitEnd);
         addEventListener("pageshow", fitEnd);
         if (window.visualViewport) visualViewport.addEventListener("resize", fitEnd);
