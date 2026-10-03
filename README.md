@@ -1,6 +1,6 @@
 # Space Capitalism
 
-![Space Capitalism](Space Capitalism.png)
+![Space Capitalism](SCBanner.png)
 
 
 A space-themed idle game that runs in your browser. Build fleets, hire crew, research new tech, warp for Dark Matter and, eventually, send your whole empire through a black hole.
