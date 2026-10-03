@@ -280,7 +280,7 @@
         /* room at the end of every tab so the last item can scroll clear of the tab bar (iPhones ignore bottom padding here) */
         content: "";
         display: block;
-        height: calc(96px + env(safe-area-inset-bottom, 0px));
+        height: var(--end, calc(120px + env(safe-area-inset-bottom, 0px)));
       }
       #fleet {
         display: flex;
@@ -1084,7 +1084,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 25</small>
+          <small class="bld">Build 26</small>
         </details>
       </div>
     </main>
@@ -3581,6 +3581,28 @@
               });
           },
         };
+      })();
+
+      // Room at the end of every tab: measured, not guessed. iPhones sometimes make the page taller than the
+      // screen, so a fixed amount isn't enough. This only sets a size; it never scrolls or touches the viewport.
+      (() => {
+        const nav = $("nav");
+        let last = -1;
+        function fitEnd() {
+          const vv = window.visualViewport;
+          const seen = Math.min(
+            nav.getBoundingClientRect().top,
+            innerHeight,
+            vv ? vv.height + vv.offsetTop : innerHeight,
+          );
+          const room = Math.ceil(Math.max(0, view.getBoundingClientRect().bottom - seen, nav.offsetHeight) + 24);
+          if (room !== last) view.style.setProperty("--end", (last = room) + "px");
+        }
+        fitEnd();
+        addEventListener("resize", fitEnd);
+        addEventListener("pageshow", fitEnd);
+        if (window.visualViewport) visualViewport.addEventListener("resize", fitEnd);
+        setInterval(fitEnd, 1000);
       })();
     </script>
   </body>
