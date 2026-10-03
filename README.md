@@ -16,6 +16,7 @@ It's inspired by *AdVenture Capitalist* and *AdVenture Communist*, merged into o
 - **Ascend** for Quasar Cores, a second prestige layer with its own upgrades.
 - **The black hole:** build the Singularity Gate, charge it (with Gate amplifiers to speed it up) and cross the event horizon to finish the game. A full playthrough takes roughly 100+ hours.
 - **36 missions and 78 achievements**, each adding permanent profit.
+- **Big moments:** warping, ascending and crossing the event horizon each play a short full-screen cinematic.
 - **Bonuses:** a daily bonus worth six hours of income, and a power boost that triples your profit for 30 minutes and grows stronger with every Ascension.
 - **Quality of life:** "buy all" and "hire all" buttons, a "Next ×2" buy mode, hints that tell you when to warp or ascend, red dots when missions or bonuses are ready, and number names up to Centillion (10³⁰³).
 - **Offline earnings,** so your fleets keep working while you're away. A power boost only counts for the time it had left.
@@ -41,7 +42,7 @@ It's inspired by *AdVenture Capitalist* and *AdVenture Communist*, merged into o
 
 Progress saves automatically in your browser every few seconds. Saves are tied to the browser and address you play in, so clearing Safari's website data deletes your save.
 
-To back up or move your progress, open the **Stats** tab, scroll to the bottom and tap **Settings**:
+To back up or move your progress, open the **Black Hole** tab, scroll to the bottom and tap **Settings**:
 
 - **Export** gives you a save code, including your theme color. Keep it somewhere safe.
 - **Import** loads a save code, for example on another device.
@@ -57,4 +58,4 @@ To run it locally, download `index.html` and open it in any modern browser.
 
 ## Version
 
-Current build: **Build 16**.
+Current build: **Build 17**.

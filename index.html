@@ -58,7 +58,6 @@
           radial-gradient(ellipse at 90% 88%, hsl(calc(var(--h) + 150) 60% 15% / 0.8), transparent 48%) fixed,
           var(--bg);
       }
-      html,
       body {
         overflow: hidden;
       } /* the page itself never scrolls; only the area below the top banner does */
@@ -204,13 +203,23 @@
         width: 100%;
         max-width: 640px;
         display: grid;
-        grid-template-columns: repeat(8, 1fr);
+        grid-template-columns: repeat(7, 1fr);
         gap: 6px;
         padding: 8px 10px calc(env(safe-area-inset-bottom, 0px) + 6px);
         background: color-mix(in srgb, var(--bg) 60%, transparent);
         -webkit-backdrop-filter: blur(14px);
         backdrop-filter: blur(14px);
         border-top: 1px solid var(--bd);
+      }
+      #nav::after {
+        /* the bar's background continues to the very bottom of the screen, so no seam can show beneath it */
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        height: 80px;
+        background: inherit;
       }
       #nav button {
         position: relative;
@@ -578,7 +587,7 @@
         margin: 4px 0 6px;
       }
 
-      /* ---------- Settings (Stats tab) ---------- */
+      /* ---------- Settings (bottom of the Black Hole tab) ---------- */
       #setb input[type="color"] {
         flex: none;
         width: 52px;
@@ -816,6 +825,56 @@
         border-radius: 24px;
       }
 
+      /* ---------- Big moments: warp, ascend and crossing the event horizon ---------- */
+      #fx {
+        position: fixed;
+        inset: 0;
+        z-index: 55;
+      } /* blocks taps while it plays */
+      #fxc {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #fxt {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 45%;
+        transform: translateY(-50%) scale(0.85);
+        padding: 0 24px;
+        text-align: center;
+        opacity: 0;
+      }
+      #fxt.show {
+        opacity: 1;
+        transform: translateY(-50%);
+      }
+      #fxt h2 {
+        margin: 0 0 8px;
+        font:
+          800 40px/1.05 "Trebuchet MS",
+          Verdana,
+          sans-serif;
+        letter-spacing: 1px;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      #fxt.warp h2 {
+        background-image: linear-gradient(90deg, #fff, #9fd8ff 50%, #c58bff);
+      }
+      #fxt.ascend h2 {
+        background-image: linear-gradient(90deg, #fff3c4, #ffc65a 50%, #ff9d5c);
+      }
+      #fxt p {
+        margin: 0;
+        color: var(--tx);
+        font-size: 16px;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+      }
+
       /* ---------- Floating numbers and milestone flash ---------- */
       .pop {
         /* rises from the card's top edge into the gap above it, clear of names and bar labels */
@@ -879,6 +938,11 @@
         }
         button:not(.dis):active {
           transform: scale(0.96);
+        }
+        #fxt {
+          transition:
+            opacity 0.35s,
+            transform 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
         }
         #toast {
           transition:
@@ -1083,7 +1147,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 16</small>
+          <small class="bld">Build 17</small>
         </details>
       </div>
     </main>
@@ -1098,6 +1162,10 @@
         <div id="ends"></div>
         <button data-a="closeEnding" data-i="0">Keep playing</button>
       </div>
+    </div>
+    <div id="fx" hidden>
+      <canvas id="fxc"></canvas>
+      <div id="fxt"></div>
     </div>
     <div id="toast"></div>
 
@@ -1619,7 +1687,6 @@
         { key: "missions", name: "Missions", icon: "flag", color: "#ff8fd2" },
         { key: "warp", name: "Warp", icon: "hole", color: "#c58bff" },
         { key: "blackhole", name: "Black Hole", icon: "vortex", color: "#ff9d5c" },
-        { key: "stats", name: "Stats", icon: "chart", color: "#7ee0ff" },
       ];
       const tabIndex = (key) => TABS.findIndex((t) => t.key === key);
       const BUY_MODES = [1, 10, 100, "max", "next"];
@@ -2052,7 +2119,11 @@
             missions: S.missions,
             warps: S.warps + 1,
           });
-          toast(`Warp complete: +${count(p)} Dark Matter. Profit bonus now ×${fmt(1 + dmBonusAt(dmAvailable()))}`);
+          spectacle(
+            "warp",
+            "Warp complete",
+            `+${count(p)} Dark Matter · profit bonus now ×${fmt(1 + dmBonusAt(dmAvailable()))}`,
+          );
         },
         ascend() {
           const q = ascendReward();
@@ -2063,7 +2134,7 @@
             ascensions: S.ascensions + 1,
             research: Object.fromEntries(keep.map((r) => [r.id, 1])),
           });
-          toast(`Ascended: +${count(q)} Quasar Cores`);
+          spectacle("ascend", "Ascended", `+${count(q)} Quasar Cores · ${count(S.cores)} in total`);
         },
         amplifier(v) {
           const k = +v,
@@ -2080,7 +2151,7 @@
           S.wonAt = S.playTime;
           checkAchievements();
           save();
-          showEnding();
+          spectacle("cross", "", "", showEnding);
         },
         daily() {
           if (Date.now() < S.dailyReadyAt) return;
@@ -2348,7 +2419,7 @@
       const TUTORIAL = [
         [
           "Welcome to Space Capitalism",
-          "<p>Build a space empire that keeps earning even while you're away. Start with a single Solar Array and grow until you can reach the black hole at the edge of the galaxy.</p><p>Move between tabs with the bar at the bottom, or swipe left and right anywhere below the top boxes.</p><p>This guide takes a minute. You can reopen it any time from <b>Settings</b> on the Stats tab.</p>",
+          "<p>Build a space empire that keeps earning even while you're away. Start with a single Solar Array and grow until you can reach the black hole at the edge of the galaxy.</p><p>Move between tabs with the bar at the bottom, or swipe left and right anywhere below the top boxes.</p><p>This guide takes a minute. You can reopen it any time from <b>Settings</b> at the bottom of the Black Hole tab.</p>",
         ],
         [
           "Fleets",
@@ -2360,7 +2431,7 @@
         ],
         [
           "Research and missions",
-          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. A red dot on the Missions tab means one is ready. <b>Achievements</b> on the Stats tab add +1% profit each.</p>",
+          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. A red dot on the Missions tab means one is ready. <b>Achievements</b>, below the black hole on its tab, add +1% profit each.</p>",
         ],
         [
           "Warp and Dark Matter",
@@ -2376,7 +2447,7 @@
         ],
         [
           "Tips",
-          "<p>On the <b>Stats</b> tab: the <b>daily bonus</b> pays six hours of income, and the <b>power boost</b> triples your profit for 30 minutes, getting stronger with each Ascension. A red dot shows when one is ready.</p><p>Your game saves automatically. Use <b>Export</b> in Settings now and then to keep a backup code.</p>",
+          "<p>On the <b>Black Hole</b> tab, below the gate: the <b>daily bonus</b> pays six hours of income, and the <b>power boost</b> triples your profit for 30 minutes, getting stronger with each Ascension. A red dot on that tab shows when one is ready.</p><p>Your game saves automatically. Use <b>Export</b> in Settings now and then to keep a backup code.</p>",
         ],
       ];
       let tutorialPage = 0;
@@ -2473,7 +2544,7 @@
           const badge =
             t.key === "warp"
               ? goodWarp() || goodAscend()
-              : t.key === "stats"
+              : t.key === "blackhole"
                 ? now >= S.dailyReadyAt || now >= S.boostReadyAt
                 : t.key === "missions"
                   ? MISSIONS.some((m) => !S.missions[m.id] && m.done())
@@ -2515,6 +2586,12 @@
 
       // Pane builders, one per tab. Each returns [main pane HTML, second pane HTML]
       const PANES = {
+        // The Black Hole tab: the end goal first, then bonuses, stats, achievements and (below the panes) Settings
+        blackhole() {
+          const [gate] = PANES.gate(),
+            [stats, achievements] = PANES.stats();
+          return [gate + stats, achievements];
+        },
         crew() {
           let h = bulkButton(
             "hireAll",
@@ -2654,7 +2731,7 @@
             ).join("");
           return [h];
         },
-        blackhole() {
+        gate() {
           if (S.wonAt)
             return [
               `<div class="row panel center"><b>You crossed the event horizon</b><small>Finished after ${duration(S.wonAt)} of play. You can keep playing to finish achievements, research and upgrades.</small></div>`,
@@ -2784,7 +2861,7 @@
         const [main, extra = ""] = PANES[tab]();
         setHTML($("pane"), main);
         setHTML($("pane2"), extra);
-        if (tab === "stats") setHTML($("setrows"), settingsRows());
+        if (tab === "blackhole") setHTML($("setrows"), settingsRows());
       }
       // Full render: after actions and tab changes. The main loop renders the fleet every tick and other panes every third tick
       let shownTab = "";
@@ -2796,13 +2873,153 @@
             color = TABS[tabIndex(tab)].color;
           $("modes").hidden = $("allms").hidden = $("fleet").hidden = !onFleet;
           $("bhv").hidden = tab !== "blackhole";
-          $("setb").hidden = tab !== "stats";
+          $("setb").hidden = tab !== "blackhole";
           $("pane").style.setProperty("--tabc", color);
           $("pane2").style.setProperty("--tabc", color);
           if (onFleet) (setHTML($("pane"), ""), setHTML($("pane2"), ""));
         }
         if (tab === "fleet") renderFleet();
         else if (full) renderPane();
+      }
+      // ===== Big moments: a short full-screen cinematic for warping, ascending and crossing the event horizon =====
+      // kind: 'warp' (hyperspace streaks), 'ascend' (golden shockwave) or 'cross' (everything spirals into the dark)
+      function spectacle(kind, title, sub, then) {
+        const box = $("fx"),
+          cv = $("fxc"),
+          words = $("fxt");
+        words.innerHTML = `<h2>${title}</h2><p>${sub}</p>`;
+        words.className = kind;
+        box.hidden = false;
+        if (reducedMotion) {
+          words.classList.add("show");
+          return setTimeout(() => ((box.hidden = true), words.classList.remove("show"), then && then()), 1800);
+        }
+        const W = innerWidth,
+          H = innerHeight,
+          dpr = Math.min(devicePixelRatio || 1, 2),
+          x = cv.getContext("2d");
+        cv.width = W * dpr;
+        cv.height = H * dpr;
+        x.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const cx = W / 2,
+          cy = H * 0.45,
+          R = Math.hypot(W, H) / 2,
+          rand = (a, b) => a + Math.random() * (b - a);
+        const palette = {
+          warp: ["#ffffff", "#9fd8ff", "#c58bff", "#5fd8ff"],
+          ascend: ["#fff3c4", "#ffc65a", "#ff9d5c", "#ffffff"],
+          cross: ["#ffd08a", "#ff5fa2", "#8b5cf6", "#ffffff"],
+        }[kind];
+        const parts = Array.from({ length: kind === "warp" ? 260 : 200 }, () => ({
+          a: rand(0, 6.283),
+          z: rand(0.15, 1),
+          r: rand(0.2, 1),
+          s: rand(0.6, 1.4),
+          c: palette[(Math.random() * palette.length) | 0],
+        }));
+        const LEN = kind === "cross" ? 2900 : 3000;
+        let t0 = 0;
+        function frame(now) {
+          if (!t0) t0 = now;
+          const p = Math.min(1, (now - t0) / LEN); // a late frame never overshoots the end
+          x.clearRect(0, 0, W, H);
+          // backdrop: darkens in, holds, fades out (cross stays dark and hands over to the ending screen)
+          const dark =
+            kind === "cross" ? Math.min(1, p * 1.6) : Math.min(0.75, p * 4) * (p > 0.8 ? 1 - (p - 0.8) / 0.2 : 1);
+          x.globalAlpha = 1;
+          x.fillStyle = `rgba(4,0,10,${dark})`;
+          x.fillRect(0, 0, W, H);
+          x.lineCap = "round";
+          if (kind === "warp") {
+            // stars rush toward you, stretching into streaks as the jump speeds up
+            const speed = p < 0.45 ? 0.002 + p * 0.06 : Math.max(0.002, 0.029 - (p - 0.45) * 0.07);
+            for (const s of parts) {
+              const z0 = s.z;
+              s.z -= speed * s.s;
+              if (s.z <= 0.02) s.z += 1;
+              const d0 = (R * 0.08) / z0,
+                d1 = (R * 0.08) / s.z;
+              if (d1 < d0) continue;
+              x.globalAlpha = Math.min(1, (1 - s.z) * 1.4) * (p > 0.85 ? (1 - p) / 0.15 : 1);
+              x.strokeStyle = s.c;
+              x.lineWidth = 0.6 + (1 - s.z) * 2.4 * s.r;
+              x.beginPath();
+              x.moveTo(cx + Math.cos(s.a) * d0, cy + Math.sin(s.a) * d0);
+              x.lineTo(cx + Math.cos(s.a) * d1, cy + Math.sin(s.a) * d1);
+              x.stroke();
+            }
+          } else if (kind === "ascend") {
+            // a glowing core swells, then golden shockwaves and sparks burst outward
+            const burst = Math.max(0, (p - 0.28) / 0.72);
+            const core = p < 0.28 ? p / 0.28 : Math.max(0, 1 - burst * 2);
+            const g = x.createRadialGradient(cx, cy, 0, cx, cy, 30 + 90 * core);
+            g.addColorStop(0, `rgba(255,243,196,${0.95 * core})`);
+            g.addColorStop(0.4, `rgba(255,198,90,${0.6 * core})`);
+            g.addColorStop(1, "rgba(255,157,92,0)");
+            x.globalAlpha = 1;
+            x.fillStyle = g;
+            x.beginPath();
+            x.arc(cx, cy, 30 + 90 * core, 0, 6.283);
+            x.fill();
+            for (let k = 0; k < 3; k++) {
+              const q = burst - k * 0.12;
+              if (q <= 0 || q >= 1) continue;
+              x.globalAlpha = (1 - q) * 0.9;
+              x.strokeStyle = palette[k];
+              x.lineWidth = 6 * (1 - q) + 1;
+              x.beginPath();
+              x.arc(cx, cy, q * R * 1.1, 0, 6.283);
+              x.stroke();
+            }
+            if (burst > 0)
+              for (const s of parts) {
+                const d = burst * R * (0.4 + s.r * 0.9),
+                  a = s.a + burst * 0.6 * (s.s - 1);
+                x.globalAlpha = Math.max(0, 1 - burst) * 0.95;
+                x.fillStyle = s.c;
+                x.beginPath();
+                x.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, 1 + s.r * 2.2 * (1 - burst * 0.5), 0, 6.283);
+                x.fill();
+              }
+          } else {
+            // everything spirals into the black hole, which grows until the screen goes dark
+            for (const s of parts) {
+              const pull = Math.min(1, p * 1.3 * s.s),
+                d = (1 - pull) * R * (0.3 + s.r),
+                a = s.a + pull * 7;
+              x.globalAlpha = (1 - pull) * 0.9;
+              x.fillStyle = s.c;
+              x.beginPath();
+              x.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d * 0.55, 1 + s.r * 1.8, 0, 6.283);
+              x.fill();
+            }
+            const hole = Math.max(0, (p - 0.35) / 0.65) * R * 1.3;
+            const ring = x.createRadialGradient(cx, cy, hole * 0.8, cx, cy, hole * 1.15 + 1);
+            ring.addColorStop(0, "rgba(0,0,0,1)");
+            ring.addColorStop(0.75, "rgba(255,157,92,0.8)");
+            ring.addColorStop(1, "rgba(255,95,162,0)");
+            x.globalAlpha = 1;
+            x.fillStyle = ring;
+            x.beginPath();
+            x.arc(cx, cy, hole * 1.15 + 1, 0, 6.283);
+            x.fill();
+          }
+          // a bright flash at the peak of each moment
+          const peak = { warp: 0.42, ascend: 0.3, cross: 0.92 }[kind],
+            f = Math.max(0, 1 - Math.abs(p - peak) / 0.07);
+          if (f > 0) {
+            x.globalAlpha = f * (kind === "cross" ? 0.5 : 0.85);
+            x.fillStyle = kind === "warp" ? "#e8f4ff" : kind === "ascend" ? "#fff3c4" : "#ffffff";
+            x.fillRect(0, 0, W, H);
+          }
+          if (p > peak && !words.classList.contains("show") && kind !== "cross") words.classList.add("show");
+          if (p < 1) return requestAnimationFrame(frame);
+          words.classList.remove("show");
+          box.hidden = true;
+          x.clearRect(0, 0, W, H);
+          if (then) then();
+        }
+        requestAnimationFrame(frame);
       }
       function showEnding() {
         $("ends").innerHTML = [
