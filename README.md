@@ -51,11 +51,11 @@ To back up or move your progress, open the **Black Hole** tab, scroll to the bot
 
 - The whole game is a single `index.html` file: plain HTML, CSS and JavaScript with no frameworks, build step or external downloads.
 - Game content (fleets, research, upgrades, missions, achievements) is plain data near the top of the script, and each upgrade's effect is written next to it, so adding one is a single line. Saves from earlier builds are converted automatically.
-- Icons are hand-drawn inline SVGs, the black hole is an animated SVG, and the starfield and nebulas are drawn on a canvas.
+- Icons are hand-drawn inline SVGs. The black hole, starfield and nebulas are drawn on canvases.
 - Game balance was tuned with an automated player that simulated full playthroughs, targeting the first warp at about 1.5 hours and a finish at about 100 hours of perfect, nonstop play.
 
 To run it locally, download `index.html` and open it in any modern browser.
 
 ## Version
 
-Current build: **Build 19**.
+Current build: **Build 20**.

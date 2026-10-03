@@ -594,7 +594,12 @@
       #bhv {
         display: flex;
         justify-content: center;
-        margin: 4px 0 6px;
+        margin: 0 -10px 4px;
+      }
+      #bhc {
+        width: 100%;
+        max-width: 520px;
+        aspect-ratio: 1 / 0.62;
       }
 
       /* ---------- Settings (bottom of the Black Hole tab) ---------- */
@@ -1008,20 +1013,6 @@
             transform: translateY(-10px) rotate(6deg);
           }
         }
-        #bhv .pulse {
-          transform-box: fill-box;
-          transform-origin: center;
-          animation: bpulse 4.5s ease-in-out infinite;
-        }
-        @keyframes bpulse {
-          50% {
-            transform: scale(1.07);
-            opacity: 0.82;
-          }
-        }
-        #bhv .ring2 {
-          animation: gp 3s ease-in-out infinite;
-        }
         @keyframes gp {
           50% {
             opacity: 0.75;
@@ -1039,9 +1030,6 @@
       .low #deep,
       .low .pop {
         display: none;
-      }
-      .low #bhv .pulse {
-        filter: none;
       }
       .low #nav {
         -webkit-backdrop-filter: none;
@@ -1083,157 +1071,7 @@
       <div id="modes" class="modes"></div>
       <p id="allms" class="allms"></p>
       <div id="fleet"></div>
-      <div id="bhv" hidden>
-        <svg viewBox="0 0 300 300" width="300" height="300" aria-hidden="true">
-          <defs>
-            <filter id="liq" x="-20%" y="-20%" width="140%" height="140%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.011 0.018" numOctaves="2" seed="4" result="n">
-                <animate
-                  attributeName="baseFrequency"
-                  dur="16s"
-                  values="0.011 0.018;0.019 0.011;0.011 0.018"
-                  repeatCount="indefinite"
-                />
-              </feTurbulence>
-              <feDisplacementMap in="SourceGraphic" in2="n" scale="22" xChannelSelector="R" yChannelSelector="G" />
-              <feGaussianBlur stdDeviation="2.5" />
-            </filter>
-            <filter id="flow" x="-10%" y="-60%" width="120%" height="220%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.035 0.16" numOctaves="2" seed="9" result="n">
-                <animate
-                  attributeName="baseFrequency"
-                  dur="9s"
-                  values="0.035 0.16;0.05 0.12;0.035 0.16"
-                  repeatCount="indefinite"
-                />
-              </feTurbulence>
-              <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" />
-              <feGaussianBlur stdDeviation="1.3" />
-            </filter>
-            <filter id="bsoft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5" /></filter>
-            <filter id="lensf" x="-30%" y="-30%" width="160%" height="160%">
-              <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="2" result="n">
-                <animate attributeName="baseFrequency" dur="11s" values="0.06;0.085;0.06" repeatCount="indefinite" />
-              </feTurbulence>
-              <feDisplacementMap
-                in="SourceGraphic"
-                in2="n"
-                scale="6"
-                xChannelSelector="R"
-                yChannelSelector="G"
-                result="d"
-              />
-              <feGaussianBlur in="d" stdDeviation="2.2" />
-            </filter>
-            <radialGradient id="bhalo">
-              <stop offset="30%" stop-color="#fff6e0" stop-opacity="0" />
-              <stop offset="35%" stop-color="#fff3d1" />
-              <stop offset="42%" stop-color="#ffc061" stop-opacity=".9" />
-              <stop offset="56%" stop-color="#ff7a2e" stop-opacity=".5" />
-              <stop offset="74%" stop-color="#b8325a" stop-opacity=".18" />
-              <stop offset="100%" stop-color="#3a0a2e" stop-opacity="0" />
-            </radialGradient>
-            <linearGradient id="lens" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#fff6dc" />
-              <stop offset=".22" stop-color="#ffc061" stop-opacity=".9" />
-              <stop offset=".5" stop-color="#ff8a3a" stop-opacity=".15" />
-              <stop offset=".78" stop-color="#ffb44f" stop-opacity=".7" />
-              <stop offset="1" stop-color="#ffe7b0" />
-            </linearGradient>
-            <linearGradient id="bdisk" x1="0" x2="1">
-              <stop offset="0" stop-color="#ff6a2a" stop-opacity="0" />
-              <stop offset=".15" stop-color="#ffc77a" stop-opacity=".95" />
-              <stop offset=".42" stop-color="#fffaf0" />
-              <stop offset=".7" stop-color="#ffb44f" stop-opacity=".8" />
-              <stop offset="1" stop-color="#ff6a2a" stop-opacity="0" />
-            </linearGradient>
-            <clipPath id="front"><rect x="0" y="150" width="300" height="16" /></clipPath>
-            <ellipse
-              id="diskglow"
-              cx="150"
-              cy="150"
-              rx="146"
-              ry="11"
-              fill="url(#bdisk)"
-              filter="url(#bsoft)"
-              opacity=".85"
-            />
-            <g id="disk">
-              <g filter="url(#flow)" fill="none" stroke-linecap="round">
-                <ellipse
-                  cx="150"
-                  cy="150"
-                  rx="140"
-                  ry="9"
-                  stroke="#ffe2b0"
-                  stroke-width="1.6"
-                  stroke-dasharray="70 20 40 34"
-                  opacity=".55"
-                >
-                  <animate attributeName="stroke-dashoffset" from="0" to="-328" dur="5s" repeatCount="indefinite" />
-                </ellipse>
-                <ellipse
-                  cx="150"
-                  cy="150"
-                  rx="118"
-                  ry="7"
-                  stroke="#ffb867"
-                  stroke-width="2.2"
-                  stroke-dasharray="80 26 34 20"
-                  opacity=".6"
-                >
-                  <animate attributeName="stroke-dashoffset" from="0" to="-300" dur="3.6s" repeatCount="indefinite" />
-                </ellipse>
-                <ellipse
-                  cx="150"
-                  cy="150"
-                  rx="96"
-                  ry="5"
-                  stroke="#fff3d6"
-                  stroke-width="1.4"
-                  stroke-dasharray="54 18 40 11"
-                  opacity=".7"
-                >
-                  <animate attributeName="stroke-dashoffset" from="0" to="-246" dur="2.6s" repeatCount="indefinite" />
-                </ellipse>
-                <ellipse
-                  cx="150"
-                  cy="150"
-                  rx="74"
-                  ry="3.6"
-                  stroke="#ff9a4a"
-                  stroke-width="2"
-                  stroke-dasharray="48 15"
-                  opacity=".55"
-                >
-                  <animate attributeName="stroke-dashoffset" from="0" to="-190" dur="1.9s" repeatCount="indefinite" />
-                </ellipse>
-              </g>
-              <ellipse cx="150" cy="150" rx="132" ry="2.2" fill="url(#bdisk)" />
-            </g>
-          </defs>
-          <g transform="rotate(-8 150 150)">
-            <g class="pulse" filter="url(#liq)"><circle cx="150" cy="150" r="142" fill="url(#bhalo)" /></g>
-            <ellipse
-              class="ring2"
-              cx="150"
-              cy="150"
-              rx="70"
-              ry="66"
-              fill="none"
-              stroke="url(#lens)"
-              stroke-width="15"
-              filter="url(#lensf)"
-            />
-            <use href="#diskglow" />
-            <use href="#disk" />
-            <circle cx="150" cy="150" r="50" fill="#000" />
-            <circle cx="150" cy="150" r="51.6" fill="none" stroke="#fff4d6" stroke-width="1.8" opacity=".95" />
-            <use href="#disk" clip-path="url(#front)" />
-            <ellipse cx="150" cy="150" rx="146" ry="7" fill="url(#bdisk)" opacity=".35" clip-path="url(#front)" />
-          </g>
-        </svg>
-      </div>
+      <div id="bhv" hidden><canvas id="bhc"></canvas></div>
       <div id="pane"></div>
       <div id="pane2"></div>
       <div id="setb" hidden>
@@ -1259,7 +1097,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 19</small>
+          <small class="bld">Build 20</small>
         </details>
       </div>
     </main>
@@ -2284,6 +2122,7 @@
         effects() {
           S.settings.effects = !S.settings.effects;
           document.body.classList.toggle("low", !S.settings.effects);
+          Gargantua.show(tab === "blackhole");
         },
         tutorial: () => showTutorial(),
         tutNext: () => turnTutorial(1),
@@ -2541,7 +2380,7 @@
         ],
         [
           "Research and missions",
-          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. Missions are at the top of the Research tab, and a red dot on it means one is ready. <b>Achievements</b>, below the black hole on its tab, add +1% profit each.</p>",
+          "<p>The <b>Research Lab</b> makes <b>Science</b> instead of credits. Spend Science on the Research tab for permanent tech: bigger profits, faster cycles and cheaper purchases. Research survives warps.</p><p><b>Missions</b> reward Science and each one you claim adds profit permanently. Missions are at the top of the Research tab. A red dot on any tab means there is something there you can claim or afford. <b>Achievements</b>, below the black hole on its tab, add +1% profit each.</p>",
         ],
         [
           "Warp and Dark Matter",
@@ -2637,6 +2476,34 @@
         $("hdDmIcon").innerHTML = icon("hole", 12);
       }
 
+      // Red dots on the tab bar: something on that tab is ready or affordable right now
+      const TAB_BADGES = {
+        // the next fleet in the line can be built
+        fleet: () => UNITS.some((u, i) => !level(i) && isVisible(i) && S.cash >= buyCost(i, 1)),
+        // crew to hire or an upgrade to buy
+        upgrades: () =>
+          DISPLAY_ORDER.some(
+            (i) =>
+              level(i) &&
+              ((!S.crew[i] && S.cash >= crewCost(i)) || (i !== LAB && S.upgrades[i] < 10 && S.cash >= upgradeCost(i))),
+          ),
+        // a mission to claim or research to buy
+        research: () =>
+          MISSIONS.some((m) => !S.missions[m.id] && m.done()) ||
+          RESEARCH.some((r) => !S.research[r.id] && S.science >= r.cost),
+        // a good time to warp or ascend, or a Dark Matter or core upgrade to buy
+        warp: () =>
+          goodWarp() ||
+          goodAscend() ||
+          DM_UPGRADES.some((u) => !S.dmUpgrades[u.id] && dmAvailable() >= u.cost) ||
+          CORE_UPGRADES.some((u) => !S.coreUpgrades[u.id] && coresAvailable() >= u.cost),
+        // a bonus to claim, the event horizon to cross, or a Gate amplifier to buy
+        blackhole: (now) =>
+          now >= S.dailyReadyAt ||
+          now >= S.boostReadyAt ||
+          (!S.wonAt && S.charge >= CHARGE_GOAL) ||
+          (S.gateBuilt && AMPLIFIERS.some((a, k) => ampFunds(k) >= ampCost(k))),
+      };
       function renderHeader() {
         const now = Date.now();
         setText($("hdMult"), " · Profit ×" + fmt(M.mult));
@@ -2651,15 +2518,7 @@
         for (const t of TABS) {
           const b = $("nav-" + t.key);
           b.classList.toggle("on", t.key === tab);
-          const badge =
-            t.key === "warp"
-              ? goodWarp() || goodAscend()
-              : t.key === "blackhole"
-                ? now >= S.dailyReadyAt || now >= S.boostReadyAt
-                : t.key === "research"
-                  ? MISSIONS.some((m) => !S.missions[m.id] && m.done())
-                  : false;
-          b.classList.toggle("badge", badge);
+          b.classList.toggle("badge", t.key !== tab && TAB_BADGES[t.key](now));
         }
         BUY_MODES.forEach((m) => $("mode-" + m).classList.toggle("on", m === buyMode));
         setText($("wipeb"), armed === "delete" ? "Tap again" : "Delete");
@@ -3000,6 +2859,7 @@
             color = TABS[tabIndex(tab)].color;
           $("modes").hidden = $("allms").hidden = $("fleet").hidden = !onFleet;
           $("bhv").hidden = tab !== "blackhole";
+          Gargantua.show(tab === "blackhole");
           $("setb").hidden = tab !== "blackhole";
           $("pane").style.setProperty("--tabc", color);
           $("pane2").style.setProperty("--tabc", color);
@@ -3148,6 +3008,224 @@
         }
         requestAnimationFrame(frame);
       }
+      // ===== The black hole (Black Hole tab) =====
+      // Drawn on a canvas from hundreds of thin glowing strands: the accretion disk across the middle, the light from the far
+      // side of the disk bent up over the top and down under the bottom, and the thin photon ring around the shadow. A soft
+      // bloom is added on top. Each strand's streaks flow at their own speed (inner ones faster), so the disk looks alive.
+      // It only animates while its tab is open.
+      const Gargantua = (() => {
+        const cv = $("bhc"),
+          ctx = cv.getContext("2d");
+        const layer = document.createElement("canvas"),
+          lx = layer.getContext("2d");
+        const blurA = document.createElement("canvas"),
+          ax = blurA.getContext("2d");
+        const blurB = document.createElement("canvas"),
+          bx = blurB.getContext("2d");
+        const TILT = (-6 * Math.PI) / 180; // a slight tilt, left side down
+        let W = 0,
+          H = 0,
+          dpr = 1,
+          R = 0,
+          cx = 0,
+          cy = 0,
+          back = [],
+          front = [],
+          running = false,
+          last = 0,
+          clock = 0;
+
+        // warm white at the hot inner edge, deep orange at the cool outer edge
+        const tint = (s, a) => `rgba(255,${Math.round(246 - 120 * s)},${Math.round(226 - 190 * s)},${a.toFixed(3)})`;
+        function strand(points, s, alpha, width, speed, rand) {
+          const p = new Path2D();
+          points.forEach(([x, y], k) => (k ? p.lineTo(x, y) : p.moveTo(x, y)));
+          const dash = [];
+          for (let k = 0; k < 4; k++) dash.push(20 + rand() * 120, 3 + rand() * 22);
+          return { p, color: tint(s, alpha), width, dash, speed, offset: rand() * 400 };
+        }
+        // A curve around the center: x spreads out near the disk plane (flare) so the arcs blend into the disk
+        function arc(a, b, flare, below, steps = 72) {
+          const pts = [];
+          for (let k = 0; k <= steps; k++) {
+            const th = (Math.PI * k) / steps,
+              si = Math.sin(th);
+            pts.push([cx + a * Math.cos(th) * (1 + flare * (1 - si) ** 3), cy + (below ? 1 : -1) * b * si ** 0.85]);
+          }
+          return pts;
+        }
+        function ellipseHalf(rx, ry, lower, dy) {
+          const pts = [];
+          for (let k = 0; k <= 90; k++) {
+            const th = (Math.PI * k) / 90;
+            pts.push([cx + rx * Math.cos(th), cy + dy + (lower ? 1 : -1) * ry * Math.sin(th)]);
+          }
+          return pts;
+        }
+
+        function setup() {
+          const w = Math.round(cv.clientWidth);
+          if (!w || w === W) return;
+          W = w;
+          H = Math.round(w * 0.62);
+          dpr = Math.min(devicePixelRatio || 1, 2);
+          for (const c of [cv, layer]) {
+            c.width = W * dpr;
+            c.height = H * dpr;
+          }
+          blurA.width = Math.ceil(W / 5);
+          blurA.height = Math.ceil(H / 5);
+          blurB.width = Math.ceil(W / 14);
+          blurB.height = Math.ceil(H / 14);
+          R = W * 0.105;
+          cx = W / 2;
+          cy = H * 0.5;
+          let seed = 7;
+          const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+          back = [];
+          front = [];
+          // far side of the disk, bent up and over the shadow: a thick bright hump
+          for (let k = 0; k < 80; k++) {
+            const s = Math.min(1, k / 79 + (rand() - 0.5) * 0.02),
+              r = R * (1.3 + 0.75 * s ** 1.15);
+            const pts = arc(r * (1.02 + 0.08 * s), r * 0.97, 0.18 + 0.55 * s ** 1.6, false);
+            back.push(
+              strand(pts, s * 0.85, 0.035 + 0.26 * (1 - s) ** 0.7, 0.7 + rand() * 1.3, 36 / (r / R) ** 1.5, rand),
+            );
+          }
+          // far side of the disk, bent down under the shadow: a thinner ring
+          for (let k = 0; k < 46; k++) {
+            const s = k / 45,
+              r = R * (1.2 + 0.42 * s);
+            const pts = arc(r, r * 0.95, 0.08 + 0.3 * s, true);
+            back.push(
+              strand(pts, 0.1 + s * 0.8, 0.03 + 0.26 * (1 - s) ** 0.8, 0.7 + rand() * 1.1, -32 / (r / R) ** 1.5, rand),
+            );
+          }
+          // the disk itself: flat rings seen nearly edge-on. Their back halves pass behind the shadow, front halves in front of it
+          for (let k = 0; k < 80; k++) {
+            const s = k / 79,
+              rx = R * (1.08 + 3.3 * s ** 1.35),
+              ry = rx * 0.03 + 0.5,
+              dy = (rand() - 0.5) * R * 0.03;
+            const alpha = 0.03 + 0.36 * (1 - s) ** 1.3,
+              width = 0.6 + rand() * 1.2,
+              speed = 42 / (rx / R) ** 1.5;
+            back.push(strand(ellipseHalf(rx, ry, false, dy), s, alpha, width, speed, rand));
+            front.push(strand(ellipseHalf(rx, ry, true, dy), s, alpha, width, -speed, rand));
+          }
+          // a little extra thickness where the disk crosses in front of the shadow
+          for (let k = 0; k < 24; k++) {
+            const s = k / 23,
+              rx = R * (1.1 + 1.6 * s),
+              ry = rx * 0.075,
+              dy = (rand() - 0.5) * R * 0.08;
+            front.push(
+              strand(
+                ellipseHalf(rx, ry, true, dy),
+                0.15 + s * 0.5,
+                0.05 + 0.12 * (1 - s),
+                0.8 + rand(),
+                -40 / (rx / R) ** 1.5,
+                rand,
+              ),
+            );
+          }
+        }
+
+        function strokeAll(list, dt) {
+          for (const k of list) {
+            k.offset += k.speed * dt;
+            lx.setLineDash(k.dash);
+            lx.lineDashOffset = k.offset;
+            lx.strokeStyle = k.color;
+            lx.lineWidth = k.width;
+            lx.stroke(k.p);
+          }
+        }
+        function draw(dt) {
+          setup();
+          if (!W) return;
+          // 1. light: everything glowing, added together so dense strands burn toward white
+          lx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          lx.clearRect(0, 0, W, H);
+          lx.translate(cx, cy);
+          lx.rotate(TILT);
+          lx.translate(-cx, -cy);
+          lx.lineCap = "round";
+          lx.globalCompositeOperation = "lighter";
+          strokeAll(back, dt);
+          // the shadow hides whatever is behind it
+          lx.globalCompositeOperation = "destination-out";
+          lx.setLineDash([]);
+          lx.beginPath();
+          lx.arc(cx, cy, R, 0, 6.283);
+          lx.fill();
+          lx.globalCompositeOperation = "lighter";
+          strokeAll(front, dt);
+          // 2. compose: dark shadow, a soft warm halo, two layers of bloom, then the sharp light
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.clearRect(0, 0, W, H);
+          ctx.globalCompositeOperation = "source-over";
+          ctx.globalAlpha = 1;
+          const halo = ctx.createRadialGradient(cx, cy, R, cx, cy, R * 3.4);
+          halo.addColorStop(0, "rgba(255,200,140,.16)");
+          halo.addColorStop(0.45, "rgba(255,140,70,.06)");
+          halo.addColorStop(1, "rgba(255,120,60,0)");
+          ctx.fillStyle = halo;
+          ctx.fillRect(0, 0, W, H);
+          ctx.fillStyle = "#030206";
+          ctx.beginPath();
+          ctx.arc(cx, cy, R, 0, 6.283);
+          ctx.fill();
+          ax.clearRect(0, 0, blurA.width, blurA.height);
+          ax.drawImage(layer, 0, 0, blurA.width, blurA.height);
+          bx.clearRect(0, 0, blurB.width, blurB.height);
+          bx.drawImage(blurA, 0, 0, blurB.width, blurB.height);
+          ctx.globalCompositeOperation = "lighter";
+          ctx.imageSmoothingQuality = "high";
+          ctx.globalAlpha = 0.6;
+          ctx.drawImage(blurB, 0, 0, W, H);
+          ctx.globalAlpha = 0.4;
+          ctx.drawImage(blurA, 0, 0, W, H);
+          ctx.globalAlpha = 1;
+          ctx.drawImage(layer, 0, 0, W, H);
+          // photon ring, a hairline of light right at the edge of the shadow (kept out of the bloom so it stays even)
+          ctx.strokeStyle = "rgba(255,214,160,.18)";
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R * 1.06, 0, 6.283);
+          ctx.stroke();
+          ctx.strokeStyle = "rgba(255,248,232,.9)";
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.arc(cx, cy, R * 1.035, 0, 6.283);
+          ctx.stroke();
+          ctx.globalCompositeOperation = "source-over";
+        }
+        function frame(t) {
+          if (!running) return;
+          requestAnimationFrame(frame);
+          if (t - last < 33) return; // about 30 frames a second is plenty for slow-moving gas
+          const dt = Math.min(0.1, (t - (last || t)) / 1000);
+          last = t;
+          clock += dt;
+          draw(dt);
+        }
+        addEventListener("resize", () => (running || W) && ((W = 0), draw(0)));
+        return {
+          // show(true) when the Black Hole tab opens, show(false) when it closes
+          show(on) {
+            const animate = on && !reducedMotion && S.settings.effects;
+            if (on && !animate) return void draw(0);
+            if (animate && !running) {
+              running = true;
+              last = 0;
+              requestAnimationFrame(frame);
+            } else if (!animate) running = false;
+          },
+        };
+      })();
       function showEnding() {
         $("ends").innerHTML = [
           ["Time played", duration(S.playTime)],
@@ -3253,7 +3331,6 @@
         let rushSpeed = 0,
           streaks = []; // after a tab change: sideways star speed, and bright streaks flying across
         const seeded = (seed) => () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
-        if (reducedMotion) document.querySelectorAll("#bhv animate").forEach((e) => e.remove());
 
         function layout() {
           const w = innerWidth,
