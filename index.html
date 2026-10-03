@@ -1078,7 +1078,7 @@
             <div><b>Delete save</b><small>Erases all progress. This can't be undone.</small></div>
             <button id="wipeb" class="danger" data-a="deleteSave" data-i="0">Delete</button>
           </div>
-          <small class="bld">Build 23</small>
+          <small class="bld">Build 24</small>
         </details>
       </div>
     </main>
@@ -3334,17 +3334,6 @@
         if (away > 10) catchUp(away);
         S.savedAt = Date.now();
       }
-      // iPhone home-screen apps sometimes open with the page a little shorter than the screen, which lifts the tab bar off
-      // the bottom until the app is reopened. iOS won't draw anything in that missing strip, so the bar can't simply be moved
-      // down; instead, when the page comes up short, ask iOS to measure the screen again
-      function fitScreen() {
-        if (navigator.standalone !== true || innerHeight >= screen.height || innerHeight < innerWidth) return; // iPhone home screen, portrait, short
-        const meta = document.querySelector("meta[name=viewport]");
-        meta.setAttribute("content", meta.getAttribute("content"));
-        scrollTo(0, 0);
-      }
-      ["resize", "orientationchange", "pageshow"].forEach((type) => addEventListener(type, fitScreen));
-      [0, 300, 1000].forEach((ms) => setTimeout(fitScreen, ms));
       load();
       build();
       applyTheme(S.settings.theme);
